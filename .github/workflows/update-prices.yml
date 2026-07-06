@@ -1,0 +1,55 @@
+name: Monthly Price Update
+
+on:
+  schedule:
+    # Run at 02:00 UTC on the 1st of every month
+    - cron: '0 2 1 * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-prices:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Run price update script
+      run: |
+        cd scripts
+        python update_prices.py
+    
+    - name: Check for changes
+      id: check_changes
+      run: |
+        git diff --exit-code data/prices.js || echo "changes=true" >> $GITHUB_OUTPUT
+    
+    - name: Commit and push if changed
+      if: steps.check_changes.outputs.changes == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/prices.js
+        git commit -m "Auto-update prices $(date +'%Y-%m-%d')"
+        git push
+    
+    - name: Create issue if update failed
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Price update failed - ${{ github.run_id }}',
+            body: 'The monthly price update workflow failed. Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).'
+          })

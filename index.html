@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOZA vs Competitors — Price Monitor</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --bg: #0f1117;
+  --bg-card: #1a1d27;
+  --bg-card2: #22263a;
+  --border: #2d3148;
+  --accent: #e63946;
+  --accent2: #f4a261;
+  --green: #2dc653;
+  --red: #e63946;
+  --yellow: #f4a261;
+  --blue: #4895ef;
+  --purple: #9b72cf;
+  --cyan: #43d9d1;
+  --text: #e8eaf0;
+  --text-muted: #8892a4;
+  --sidebar-w: 240px;
+  --header-h: 60px;
+  font-size: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ===== Header ===== */
+.header { height: var(--header-h); background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; z-index: 100; }
+.header-logo { display: flex; align-items: center; gap: 10px; }
+.header-logo .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: white; }
+.header-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+.header-subtitle { font-size: 11px; color: var(--accent2); margin-top: 1px; font-weight: 500; }
+.header-spacer { flex: 1; }
+.btn { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; color: var(--text); font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.btn:hover { background: var(--border); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+.btn.primary:hover { background: #c1121f; }
+
+/* ===== Layout ===== */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ===== Sidebar ===== */
+.sidebar { width: var(--sidebar-w); background: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 16px 0; flex-shrink: 0; overflow-y: auto; }
+.nav-section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 12px 20px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; cursor: pointer; color: var(--text-muted); font-size: 13px; font-weight: 500; transition: all 0.15s; border-left: 3px solid transparent; }
+.nav-item:hover { background: var(--bg-card2); color: var(--text); }
+.nav-item.active { background: rgba(230, 57, 70, 0.1); color: var(--accent); border-left-color: var(--accent); }
+.nav-item .nav-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--accent); color: white; border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+
+/* ===== Main Content ===== */
+.main { flex: 1; overflow-y: auto; padding: 24px; scroll-behavior: smooth; }
+.page { display: none; animation: fadeIn 0.25s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== Page Headers ===== */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.page-title { font-size: 22px; font-weight: 700; }
+.page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+/* ===== Stats Cards ===== */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; transition: border-color 0.2s; position: relative; overflow: hidden; }
+.stat-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 4px 0 0 4px; }
+.stat-card.red::after { background: var(--red); }
+.stat-card.green::after { background: var(--green); }
+.stat-card.blue::after { background: var(--blue); }
+.stat-card.yellow::after { background: var(--yellow); }
+.stat-card.purple::after { background: var(--purple); }
+.stat-card.cyan::after { background: var(--cyan); }
+.stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 28px; font-weight: 800; margin-top: 6px; line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+.stat-card.red .stat-value { color: var(--red); }
+.stat-card.green .stat-value { color: var(--green); }
+.stat-card.blue .stat-value { color: var(--blue); }
+.stat-card.yellow .stat-value { color: var(--yellow); }
+.stat-card.purple .stat-value { color: var(--purple); }
+.stat-card.cyan .stat-value { color: var(--cyan); }
+
+/* ===== Chart Containers ===== */
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.chart-card.full { grid-column: 1 / -1; }
+.chart-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+.chart-wrap { position: relative; width: 100%; max-height: 320px; }
+.chart-wrap.tall { max-height: 400px; }
+
+/* ===== Tables ===== */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+.card-title { font-size: 15px; font-weight: 600; }
+.toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.search-input { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; color: var(--text); font-size: 13px; width: 220px; outline: none; transition: border-color 0.2s; }
+.search-input:focus { border-color: var(--blue); }
+.filter-select { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; color: var(--text); font-size: 13px; outline: none; cursor: pointer; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--bg-card2); color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th:hover { color: var(--text); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover { background: rgba(255,255,255,0.02); }
+.brand-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.brand-moza { background: rgba(230,57,70,0.15); color: var(--accent); }
+.brand-fanatec { background: rgba(72,149,239,0.15); color: var(--blue); }
+.brand-simagic { background: rgba(155,114,207,0.15); color: var(--purple); }
+.brand-logitech { background: rgba(44,198,83,0.15); color: var(--green); }
+.brand-thrustmaster { background: rgba(244,162,97,0.15); color: var(--accent2); }
+.brand-asetek { background: rgba(67,217,209,0.15); color: var(--cyan); }
+.brand-pxn { background: rgba(255,193,7,0.15); color: #ffc107; }
+.brand-thermaltake { background: rgba(108,117,125,0.15); color: #adb5bd; }
+.price-val { font-weight: 700; font-size: 14px; }
+.price-low { color: var(--green); }
+.price-mid { color: var(--yellow); }
+.price-high { color: var(--red); }
+.cat-tag { font-size: 11px; color: var(--text-muted); background: var(--bg-card2); padding: 2px 8px; border-radius: 4px; }
+
+/* ===== Category Tabs ===== */
+.cat-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.cat-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); transition: all 0.15s; }
+.cat-tab:hover { color: var(--text); border-color: var(--blue); }
+.cat-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* ===== Notes ===== */
+.note { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+.note strong { color: var(--text); }
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .chart-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-icon">M</div>
+    <div>
+      <div class="header-title">MOZA Competitor Price Monitor</div>
+      <div class="header-subtitle">Racing & Flight Simulation Hardware Comparison</div>
+    </div>
+  </div>
+  <div class="header-spacer"></div>
+  <button class="btn" onclick="exportAllProducts()" title="Export all product data to CSV" style="margin-right:12px">
+    📥 Export All Data
+  </button>
+  <div style="font-size:12px;color:var(--text-muted);">Data as of: Jul 2026</div>
+</div>
+
+<!-- ===== LAYOUT ===== -->
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="showPage('page-overview')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('page-racing')">
+      <span class="nav-icon">🏎️</span> Racing Sim
+      <span class="nav-badge">5</span>
+    </div>
+    <div class="nav-item" onclick="showPage('page-flight')">
+      <span class="nav-icon">✈️</span> Flight Sim
+      <span class="nav-badge">4</span>
+    </div>
+    <div class="nav-section-label">By Category</div>
+    <div class="nav-item" onclick="showPage('page-bases')">
+      <span class="nav-icon">🔧</span> Wheel Bases
+    </div>
+    <div class="nav-item" onclick="showPage('page-wheels')">
+      <span class="nav-icon">🎯</span> Steering Wheels
+    </div>
+    <div class="nav-item" onclick="showPage('page-pedals')">
+      <span class="nav-icon">🦶</span> Pedals
+    </div>
+    <div class="nav-item" onclick="showPage('page-bundles')">
+      <span class="nav-icon">📦</span> Bundles
+    </div>
+    <div class="nav-section-label">Brands</div>
+    <div class="nav-item" onclick="showPage('page-brands')">
+      <span class="nav-icon">🏷️</span> Brand Summary
+    </div>
+  </div>
+
+  <!-- ===== MAIN ===== -->
+  <div class="main">
+
+    <!-- ===== PAGE: Overview ===== -->
+    <div class="page active" id="page-overview">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Competitor Price Dashboard</div>
+          <div class="page-subtitle">MOZA vs 7 competitors across racing & flight simulation categories</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card blue"><div class="stat-label">Brands Compared</div><div class="stat-value">8</div><div class="stat-sub">MOZA + 7 competitors</div></div>
+        <div class="stat-card red"><div class="stat-label">Racing Products</div><div class="stat-value">85+</div><div class="stat-sub">Across all brands</div></div>
+        <div class="stat-card cyan"><div class="stat-label">Flight Products</div><div class="stat-value">40+</div><div class="stat-sub">MOZA + competitors</div></div>
+        <div class="stat-card green"><div class="stat-label">MOZA Racing SKUs</div><div class="stat-value">54</div><div class="stat-sub">RS series MSRP</div></div>
+        <div class="stat-card yellow"><div class="stat-label">MOZA Flight SKUs</div><div class="stat-value">18</div><div class="stat-sub">AS series MSRP</div></div>
+        <div class="stat-card purple"><div class="stat-label">Categories</div><div class="stat-value">9</div><div class="stat-sub">Bases/Wheels/Pedals/etc.</div></div>
+      </div>
+
+      <div class="note">
+        <strong>📌 Data Sources:</strong> ALL prices sourced from official brand websites (Jul 2026). MOZA: us.mozaracing.com | Fanatec: fanatec.com | Simagic: simagic-usa.myshopify.com | Logitech: logitechg.com | Thrustmaster: eshop.thrustmaster.com | PXN: us.e-pxn.com | Thermaltake: thermaltakeusa.com | Honeycomb: flyhoneycomb.com. Prices in <strong>USD</strong>.<br>
+        <strong>🏆 MOZA Competitive Highlights:</strong> MOZA R9 V3 (9Nm, <strong>$299</strong>) significantly undercuts Fanatec CSL DD (5Nm, $399.99) and matches Simagic EVO Sport (9Nm, $399). MOZA R21 Ultra (21Nm, $699) vs Fanatec Podium DD (25Nm, $1,199) — <strong>42% price advantage</strong> at high torque. MOZA flight sim lineup (AS series, 18 SKUs) has few direct competitors — most brands only offer partial flight product lines.
+      </div>
+
+      <!-- Key Insights Cards -->
+      <div style="margin-bottom:24px;">
+        <div class="page-title" style="font-size:16px;margin-bottom:12px;">🎯 Key Competitive Insights</div>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div class="stat-card green" style="border-left:4px solid var(--green);">
+            <div style="font-weight:700;margin-bottom:8px;">✅ MOZA Advantages</div>
+            <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
+              • <strong>R9 V3 ($329, 9Nm)</strong> best value in 9Nm class<br>
+              • <strong>R21 Ultra ($699, 21Nm)</strong> unmatched at high torque<br>
+              • <strong>Flight sim lineup</strong> — 18 SKUs vs competitors' 2-6<br>
+              • <strong>Bundle pricing</strong> competitive at entry level<br>
+              • <strong>mBooster ($799)</strong> unique active pedal offering
+            </div>
+          </div>
+          <div class="stat-card red" style="border-left:4px solid var(--red);">
+            <div style="font-weight:700;margin-bottom:8px;">⚠️ MOZA Disadvantages</div>
+            <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
+              • <strong>Entry level</strong> — Logitech G29 ($249) cheaper than MOZA R3 ($279)<br>
+              • <strong>Simagic EVO Pro (18Nm, $699)</strong> vs MOZA R21 Ultra ($699, 21Nm) — similar price, Simagic has premium brand perception<br>
+              • <strong>Fanatec CSL DD</strong> has stronger console compatibility<br>
+              • <strong>Pedal range</strong> — Fanatec ClubSport V3 ($429) established competitor
+            </div>
+          </div>
+          <div class="stat-card blue" style="border-left:4px solid var(--blue);">
+            <div style="font-weight:700;margin-bottom:8px;">🚀 Market Opportunities</div>
+            <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
+              • <strong>Flight sim growth</strong> — MOZA has 18 SKUs, competitors 2-6<br>
+              • <strong>Mid-range DD</strong> — R12 V2 ($429, 12Nm) vs Simagic EVO ($549)<br>
+              • <strong>Console market</strong> — R3 Xbox bundle targets console sim racers<br>
+              • <strong>Truck sim</strong> — TSW wheel + truck bundle unique positioning<br>
+              • <strong>Active pedal market</strong> — mBooster early mover advantage
+            </div>
+          </div>
+          <div class="stat-card yellow" style="border-left:4px solid var(--yellow);">
+            <div style="font-weight:700;margin-bottom:8px;">📊 Price Positioning</div>
+            <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
+              • <strong>Entry (9Nm):</strong> MOZA R9 V3 $329 vs Simagic $399 — <span style="color:var(--green)">MOZA +17% cheaper</span><br>
+              • <strong>Mid (12Nm):</strong> MOZA R12 V2 $429 vs Simagic $549 — <span style="color:var(--green)">MOZA +22% cheaper</span><br>
+              • <strong>High (21Nm):</strong> MOZA R21 Ultra $699 vs Fanatec $1,199 — <span style="color:var(--green)">MOZA +42% cheaper</span><br>
+              • <strong>Flight:</strong> MOZA AB9 ($499) vs Honeycomb Alpha ($249) — <span style="color:var(--red)">MOZA +100% premium</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart: Price Range by Brand -->
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">🏎️ Racing Sim — Wheel Base Price Comparison by Brand (USD)</div>
+          <div class="chart-wrap tall"><canvas id="chart-overview-bases"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Brand Product Count (Racing Sim)</div>
+          <div class="chart-wrap"><canvas id="chart-overview-count"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Price Segment Distribution (All Categories)</div>
+          <div class="chart-wrap"><canvas id="chart-overview-segment"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Flight sim overview chart -->
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">✈️ Flight Sim — Product Price Comparison by Brand (USD)</div>
+          <div class="chart-wrap tall"><canvas id="chart-overview-flight"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Racing Sim ===== -->
+    <div class="page" id="page-racing">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🏎️ Racing Simulation Products</div>
+          <div class="page-subtitle">Compare MOZA RS series vs competitors — wheel bases, steering wheels, pedals, bundles</div>
+        </div>
+        <button class="btn" onclick="exportTableToCSV('table-racing', 'Racing_Sim_Products')">📥 Export CSV</button>
+      </div>
+      <div class="cat-tabs">
+        <div class="cat-tab active" onclick="filterRacingTab('all', this)">All</div>
+        <div class="cat-tab" onclick="filterRacingTab('Bundle', this)">Bundles</div>
+        <div class="cat-tab" onclick="filterRacingTab('Wheel Base', this)">Bases</div>
+        <div class="cat-tab" onclick="filterRacingTab('Steering Wheel', this)">Wheels</div>
+        <div class="cat-tab" onclick="filterRacingTab('Pedal', this)">Pedals</div>
+        <div class="cat-tab" onclick="filterRacingTab('Accessory', this)">Accessories</div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Racing Sim — Price per Category (USD)</div>
+          <div class="chart-wrap tall"><canvas id="chart-racing-cat"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Racing Sim Products — Price Comparison</div></div>
+        <div class="toolbar">
+          <input class="search-input" placeholder="🔍 Search product..." oninput="filterTable('table-racing', this.value)">
+          <select class="filter-select" onchange="filterTableCol('table-racing', 1, this.value)">
+            <option value="">All Brands</option>
+            <option value="MOZA">MOZA</option>
+            <option value="Fanatec">Fanatec</option>
+            <option value="Simagic">Simagic</option>
+            <option value="Logitech">Logitech</option>
+            <option value="Thrustmaster">Thrustmaster</option>
+            <option value="Asetek">Asetek</option>
+            <option value="PXN">PXN</option>
+            <option value="Thermaltake">Thermaltake</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table id="table-racing">
+            <thead><tr><th>Brand</th><th>Category</th><th>Product</th><th>Price (USD)</th><th>Notes</th></tr></thead>
+            <tbody id="tbody-racing"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Flight Sim ===== -->
+    <div class="page" id="page-flight">
+      <div class="page-header">
+        <div>
+          <div class="page-title">✈️ Flight Simulation Products</div>
+          <div class="page-subtitle">Compare MOZA AS series vs competitors — yokes, sticks, throttles, rudder pedals</div>
+        </div>
+      </div>
+      <div class="cat-tabs">
+        <div class="cat-tab active" onclick="filterFlightTab('all', this)">All</div>
+        <div class="cat-tab" onclick="filterFlightTab('Base', this)">Bases / Yokes</div>
+        <div class="cat-tab" onclick="filterFlightTab('Grip', this)">Sticks / Grips</div>
+        <div class="cat-tab" onclick="filterFlightTab('Throttle', this)">Throttles</div>
+        <div class="cat-tab" onclick="filterFlightTab('Rudder', this)">Rudder</div>
+        <div class="cat-tab" onclick="filterFlightTab('Accessory', this)">Accessories</div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Flight Sim — Price per Category (USD)</div>
+          <div class="chart-wrap tall"><canvas id="chart-flight-cat"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Flight Sim Products — Price Comparison</div></div>
+        <div class="toolbar">
+          <input class="search-input" placeholder="🔍 Search product..." oninput="filterTable('table-flight', this.value)">
+          <select class="filter-select" onchange="filterTableCol('table-flight', 0, this.value)">
+            <option value="">All Brands</option>
+            <option value="MOZA">MOZA</option>
+            <option value="Logitech">Logitech</option>
+            <option value="Thrustmaster">Thrustmaster</option>
+            <option value="PXN">PXN</option>
+            <option value="Honeycomb">Honeycomb</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table id="table-flight">
+            <thead><tr><th>Brand</th><th>Category</th><th>Product</th><th>Price (USD)</th><th>Notes</th></tr></thead>
+            <tbody id="tbody-flight"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Wheel Bases ===== -->
+    <div class="page" id="page-bases">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🔧 Wheel Bases / Direct Drive — Detailed Comparison</div>
+          <div class="page-subtitle">Torque (Nm) vs Price — MOZA vs all competitors</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Racing — Wheel Base Price vs Torque</div>
+          <div class="chart-wrap"><canvas id="chart-bases-scatter"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Racing — $/Nm Value (lower = better)</div>
+          <div class="chart-wrap"><canvas id="chart-bases-value"></canvas></div>
+        </div>
+        <div class="chart-card full">
+          <div class="chart-title">Racing — Wheel Base Price by Brand</div>
+          <div class="chart-wrap"><canvas id="chart-bases-bar"></canvas></div>
+        </div>
+        <div class="chart-card full">
+          <div class="chart-title">All Bases — Detailed Price Table</div>
+          <div class="table-wrap" style="max-height:500px;overflow-y:auto;">
+            <table id="table-bases">
+              <thead><tr><th>Brand</th><th>Product</th><th>Torque (Nm)</th><th>Price (USD)</th><th>$/Nm</th><th>Type</th></tr></thead>
+              <tbody id="tbody-bases"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Steering Wheels ===== -->
+    <div class="page" id="page-wheels">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🎯 Steering Wheels — Price Comparison</div>
+          <div class="page-subtitle">Compare steering wheel prices across all brands</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Steering Wheel Prices by Brand (USD)</div>
+          <div class="chart-wrap tall"><canvas id="chart-wheels-bar"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Steering Wheels — Detailed</div></div>
+        <div class="table-wrap">
+          <table id="table-wheels">
+            <thead><tr><th>Brand</th><th>Product</th><th>Price (USD)</th><th>Features</th></tr></thead>
+            <tbody id="tbody-wheels"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Pedals ===== -->
+    <div class="page" id="page-pedals">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🦶 Pedals — Price Comparison</div>
+          <div class="page-subtitle">Compare pedal set prices across all brands</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Pedal Set Prices by Brand (USD)</div>
+          <div class="chart-wrap"><canvas id="chart-pedals-bar"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Pedals — Detailed</div></div>
+        <div class="table-wrap">
+          <table id="table-pedals">
+            <thead><tr><th>Brand</th><th>Product</th><th>Type</th><th>Price (USD)</th><th>Sensor</th></tr></thead>
+            <tbody id="tbody-pedals"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Bundles ===== -->
+    <div class="page" id="page-bundles">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📦 Bundles — Ready-to-Race Comparison</div>
+          <div class="page-subtitle">Compare bundle prices (base + wheel + pedals)</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Bundle Prices by Brand (USD)</div>
+          <div class="chart-wrap"><canvas id="chart-bundles-bar"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Bundles — Detailed</div></div>
+        <div class="table-wrap">
+          <table id="table-bundles">
+            <thead><tr><th>Brand</th><th>Bundle</th><th>Contents</th><th>Price (USD)</th></tr></thead>
+            <tbody id="tbody-bundles"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE: Brand Summary ===== -->
+    <div class="page" id="page-brands">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🏷️ Brand Positioning Summary</div>
+          <div class="page-subtitle">Price segment & product coverage per brand</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Brand Avg Price by Category</div>
+          <div class="chart-wrap"><canvas id="chart-brands-heat"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Brand Price Range (Min–Max)</div>
+          <div class="chart-wrap"><canvas id="chart-brands-range"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Brand Profile Summary</div></div>
+        <div class="table-wrap">
+          <table id="table-brands">
+            <thead><tr><th>Brand</th><th>Product Count</th><th>Price Range</th><th>Entry Product</th><th>Flagship</th><th>Positioning</th></tr></thead>
+            <tbody id="tbody-brands"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script src="data/prices.js"></script>
+<script>
+// ===== DATA is loaded from data/prices.js =====
+
+// ===== PAGE NAV =====
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  event.currentTarget.classList.add('active');
+  // Resize charts after page shown
+  setTimeout(() => Chart.instances.forEach(c => c.resize()), 100);
+}
+
+// ===== TABLE POPULATION =====
+function populateTable(tbodyId, data) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  data.forEach(p => {
+    const tr = document.createElement('tr');
+    const brandClass = 'brand-' + p.brand.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const priceClass = p.price > 800 ? 'price-high' : p.price > 350 ? 'price-mid' : 'price-low';
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass}">${p.brand}</span></td>
+      <td><span class="cat-tag">${p.cat}</span></td>
+      <td>${p.name}</td>
+      <td><span class="price-val ${priceClass}">$${p.price}</span></td>
+      <td style="color:var(--text-muted);font-size:12px">${p.note || ''}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== FILTERS =====
+function filterTable(tableId, query) {
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  const q = query.toLowerCase();
+  rows.forEach(r => { r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+}
+function filterTableCol(tableId, colIdx, val) {
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  rows.forEach(r => {
+    if (!val) { r.style.display = ''; return; }
+    const cell = r.cells[colIdx];
+    r.style.display = cell && cell.textContent.includes(val) ? '' : 'none';
+  });
+}
+function filterRacingTab(cat, el) {
+  document.querySelectorAll('#page-racing .cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const rows = document.querySelectorAll('#tbody-racing tr');
+  rows.forEach(r => {
+    if (cat === 'all') { r.style.display = ''; return; }
+    const catCell = r.cells[1];
+    r.style.display = catCell && catCell.textContent.includes(cat) ? '' : 'none';
+  });
+}
+function filterFlightTab(cat, el) {
+  document.querySelectorAll('#page-flight .cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const rows = document.querySelectorAll('#tbody-flight tr');
+  rows.forEach(r => {
+    if (cat === 'all') { r.style.display = ''; return; }
+    const catCell = r.cells[1];
+    r.style.display = catCell && catCell.textContent.includes(cat) ? '' : 'none';
+  });
+}
+
+// ===== CHART: Overview Bases =====
+function renderOverviewBases() {
+  const ctx = document.getElementById('chart-overview-bases').getContext('2d');
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base' || p.cat === 'Wheel Base');
+  const brands = [...new Set(RACING_PRODUCTS.map(p => p.brand))];
+  const datasets = brands.map(brand => {
+    const items = RACING_PRODUCTS.filter(p => p.brand === brand && p.cat === 'Wheel Base');
+    return {
+      label: brand,
+      data: items.map(p => ({ x: brand, y: p.price, name: p.name })),
+      backgroundColor: BRAND_COLORS[brand] || '#888',
+      borderColor: BRAND_COLORS[brand] || '#888',
+      borderWidth: 1,
+      borderRadius: 4,
+      barPercentage: 0.7,
+    };
+  }).filter(ds => ds.data.length > 0);
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: brands.filter(b => RACING_PRODUCTS.some(p => p.brand===b && p.cat==='Wheel Base')), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8892a4' } } },
+      scales: {
+        x: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: 'Price (USD)', color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Overview Count =====
+function renderOverviewCount() {
+  const ctx = document.getElementById('chart-overview-count').getContext('2d');
+  const brands = [...new Set(RACING_PRODUCTS.map(p => p.brand))];
+  const counts = brands.map(b => RACING_PRODUCTS.filter(p => p.brand === b).length);
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: brands, datasets: [{ data: counts, backgroundColor: brands.map(b => BRAND_COLORS[b] || '#888'), borderColor: '#1a1d27', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8892a4', boxWidth: 12, font: { size: 11 } } } } }
+  });
+}
+
+// ===== CHART: Overview Segment =====
+function renderOverviewSegment() {
+  const ctx = document.getElementById('chart-overview-segment').getContext('2d');
+  const allProducts = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
+  const segments = { 'Budget (<$200)': 0, 'Mid ($200-$500)': 0, 'High ($500-$1000)': 0, 'Premium (>$1000)': 0 };
+  allProducts.forEach(p => {
+    if (p.price < 200) segments['Budget (<$200)']++;
+    else if (p.price < 500) segments['Mid ($200-$500)']++;
+    else if (p.price < 1000) segments['High ($500-$1000)']++;
+    else segments['Premium (>$1000)']++;
+  });
+  new Chart(ctx, {
+    type: 'polarArea',
+    data: { labels: Object.keys(segments), datasets: [{ data: Object.values(segments), backgroundColor: ['#2dc653','#f4a261','#4895ef','#e63946'], borderColor: '#1a1d27', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8892a4', boxWidth: 12, font: { size: 11 } } } } }
+  });
+}
+
+// ===== CHART: Overview Flight =====
+function renderOverviewFlight() {
+  const ctx = document.getElementById('chart-overview-flight').getContext('2d');
+  const brands = [...new Set(FLIGHT_PRODUCTS.map(p => p.brand))];
+  const datasets = brands.map(brand => {
+    const items = FLIGHT_PRODUCTS.filter(p => p.brand === brand);
+    return {
+      label: brand,
+      data: items.map(p => ({ x: p.cat, y: p.price, name: p.name })),
+      backgroundColor: BRAND_COLORS[brand] || '#888',
+      borderColor: BRAND_COLORS[brand] || '#888',
+      borderWidth: 1,
+      borderRadius: 4,
+    };
+  }).filter(ds => ds.data.length > 0);
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [...new Set(FLIGHT_PRODUCTS.map(p => p.cat))], datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8892a4' } } },
+      scales: {
+        x: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: 'Price (USD)', color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Racing by Category =====
+function renderRacingCat() {
+  const ctx = document.getElementById('chart-racing-cat').getContext('2d');
+  const cats = [...new Set(RACING_PRODUCTS.map(p => p.cat))];
+  const brands = [...new Set(RACING_PRODUCTS.map(p => p.brand))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: cats.map(cat => {
+      const items = RACING_PRODUCTS.filter(p => p.brand === brand && p.cat === cat);
+      return items.length > 0 ? Math.round(items.reduce((s, p) => s + p.price, 0) / items.length) : null;
+    }),
+    backgroundColor: BRAND_COLORS[brand] + '33',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 2,
+    pointRadius: 4,
+    spanGaps: true,
+  }));
+  new Chart(ctx, {
+    type: 'radar',
+    data: { labels: cats, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8892a4', boxWidth: 12, font: { size: 11 } } } },
+      scales: {
+        r: { ticks: { color: '#8892a4', backdropColor: 'transparent' }, grid: { color: '#2d3148' }, angleLines: { color: '#2d3148' }, pointLabels: { color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Bases Scatter (price vs torque) =====
+function renderBasesScatter() {
+  const ctx = document.getElementById('chart-bases-scatter').getContext('2d');
+  const torqueMap = { '2.3': 2.3, '3': 3, '3.5': 3.5, '5': 5, '6': 6, '8': 8, '9': 9, '11': 11, '12': 12, '15': 15, '18': 18, '20': 20, '21': 21, '25': 25, '27': 27, '28': 28 };
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base' || p.cat === 'Wheel Base');
+  const brands = [...new Set(bases.map(p => p.brand))];
+  const datasets = brands.map(brand => {
+    const items = bases.filter(p => p.brand === brand);
+    return {
+      label: brand,
+      data: items.map(p => {
+        const nm = p.note ? (p.note.match(/(\d+)Nm/) || [])[1] : null;
+        return { x: nm ? parseInt(nm) : 5, y: p.price, name: p.name };
+      }),
+      backgroundColor: BRAND_COLORS[brand] + 'aa',
+      borderColor: BRAND_COLORS[brand],
+      borderWidth: 2,
+      pointRadius: 6,
+    };
+  }).filter(ds => ds.data.length > 0);
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#8892a4' } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y} @ ${ctx.parsed.x}Nm` } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Torque (Nm)', color: '#8892a4' }, ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } },
+        y: { title: { display: true, text: 'Price (USD)', color: '#8892a4' }, ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Bases $/Nm Value =====
+function renderBasesValue() {
+  const ctx = document.getElementById('chart-bases-value').getContext('2d');
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
+  const brands = [...new Set(bases.map(p => p.brand))];
+  const torqueMap = { '2.3': 2.3, '3': 3, '3.5': 3.5, '5': 5, '6': 6, '8': 8, '9': 9, '11': 11, '12': 12, '15': 15, '18': 18, '20': 20, '21': 21, '25': 25, '27': 27, '28': 28 };
+  const datasets = brands.map(brand => {
+    const items = bases.filter(p => p.brand === brand);
+    const vals = items.map(p => {
+      const m = p.note ? (p.note.match(/(\d+)Nm/) || [])[1] : null;
+      const nm = m ? parseInt(m) : null;
+      return nm ? { x: brand, y: Math.round(p.price / nm * 10) / 10, name: p.name } : null;
+    }).filter(v => v !== null);
+    return vals.length > 0 ? { label: brand, data: vals, backgroundColor: BRAND_COLORS[brand] + '88', borderColor: BRAND_COLORS[brand], borderWidth: 2, borderRadius: 6 } : null;
+  }).filter(ds => ds !== null);
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: brands, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$/${ctx.parsed.y}/Nm` } } },
+      scales: {
+        x: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: '$/Nm (lower=better)', color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Bases Bar =====
+function renderBasesBar() {
+  const ctx = document.getElementById('chart-bases-bar').getContext('2d');
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
+  const brands = [...new Set(bases.map(p => p.brand))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: bases.filter(p => p.brand === brand).map(p => p.price),
+    backgroundColor: BRAND_COLORS[brand] + '88',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 1,
+    borderRadius: 4,
+  }));
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: bases.map(p => p.name.replace(/\s*\(.*\)/, '').slice(0, 24)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y}` } } },
+      scales: {
+        x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: 'USD', color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Wheels Bar =====
+function renderWheelsBar() {
+  const ctx = document.getElementById('chart-wheels-bar').getContext('2d');
+  const wheels = RACING_PRODUCTS.filter(p => p.cat === 'Steering Wheel');
+  const brands = [...new Set(wheels.map(p => p.brand))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: wheels.filter(p => p.brand === brand).map(p => p.price),
+    backgroundColor: BRAND_COLORS[brand] + '88',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 1,
+    borderRadius: 4,
+  }));
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: wheels.map(p => p.name.slice(0, 28)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Pedals Bar =====
+function renderPedalsBar() {
+  const ctx = document.getElementById('chart-pedals-bar').getContext('2d');
+  const pedals = RACING_PRODUCTS.filter(p => p.cat === 'Pedal');
+  const brands = [...new Set(pedals.map(p => p.brand))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: pedals.filter(p => p.brand === brand).map(p => p.price),
+    backgroundColor: BRAND_COLORS[brand] + '88',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 1,
+    borderRadius: 4,
+  }));
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: pedals.map(p => p.name.slice(0, 28)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Bundles Bar =====
+function renderBundlesBar() {
+  const ctx = document.getElementById('chart-bundles-bar').getContext('2d');
+  const bundles = RACING_PRODUCTS.filter(p => p.cat === 'Bundle');
+  const brands = [...new Set(bundles.map(p => p.brand))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: bundles.filter(p => p.brand === brand).map(p => p.price),
+    backgroundColor: BRAND_COLORS[brand] + '88',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 1,
+    borderRadius: 4,
+  }));
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: bundles.map(p => p.name.slice(0, 32)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
+      }
+    }
+  });
+}
+
+// ===== CHART: Flight Cat =====
+function renderFlightCat() {
+  const ctx = document.getElementById('chart-flight-cat').getContext('2d');
+  const cats = [...new Set(FLIGHT_PRODUCTS.map(p => p.cat))];
+  const brands = [...new Set(FLIGHT_PRODUCTS.map(p => p.brand))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: cats.map(cat => {
+      const items = FLIGHT_PRODUCTS.filter(p => p.brand === brand && p.cat === cat);
+      return items.length > 0 ? Math.round(items.reduce((s, p) => s + p.price, 0) / items.length) : null;
+    }),
+    backgroundColor: BRAND_COLORS[brand] + '33',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 2,
+    pointRadius: 4,
+  }));
+  new Chart(ctx, {
+    type: 'radar',
+    data: { labels: cats, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8892a4', boxWidth: 12, font: { size: 11 } } } },
+      scales: {
+        r: { ticks: { color: '#8892a4', backdropColor: 'transparent' }, grid: { color: '#2d3148' }, angleLines: { color: '#2d3148' }, pointLabels: { color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+// ===== Tables: Bases detailed =====
+function populateBasesTable() {
+  const tbody = document.getElementById('tbody-bases');
+  tbody.innerHTML = '';
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
+  const torqueMap = { '2.3': 2.3, '3': 3, '3.5': 3.5, '5': 5, '6': 6, '8': 8, '9': 9, '11': 11, '12': 12, '15': 15, '18': 18, '20': 20, '21': 21, '25': 25, '27': 27, '28': 28 };
+  bases.forEach(p => {
+    const nm = p.note ? (p.note.match(/(\d+)Nm/) || [])[1] : '?';
+    const nmNum = parseInt(nm) || 0;
+    const perNm = nmNum > 0 ? (p.price / nmNum).toFixed(1) : '?';
+    const type = p.brand === 'Logitech' ? 'Gear/Belt' : (p.price > 600 ? 'DD Premium' : 'Direct Drive');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+      <td>${p.name}</td>
+      <td style="font-weight:600">${nm}Nn</td>
+      <td><span class="price-val">$${p.price}</span></td>
+      <td>${nmNum > 0 ? '$' + perNm + '/Nm' : '—'}</td>
+      <td><span class="cat-tag">${type}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== Wheels Table =====
+function populateWheelsTable() {
+  const tbody = document.getElementById('tbody-wheels');
+  tbody.innerHTML = '';
+  const wheels = RACING_PRODUCTS.filter(p => p.cat === 'Steering Wheel');
+  wheels.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+      <td>${p.name}</td>
+      <td><span class="price-val">$${p.price}</span></td>
+      <td style="color:var(--text-muted);font-size:12px">${p.note || '—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== Pedals Table =====
+function populatePedalsTable() {
+  const tbody = document.getElementById('tbody-pedals');
+  tbody.innerHTML = '';
+  const pedals = RACING_PRODUCTS.filter(p => p.cat === 'Pedal');
+  pedals.forEach(p => {
+    const sensor = p.note.includes('Hall') ? 'Hall Effect' : (p.price > 300 ? 'Load Cell' : 'Potentiometer');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+      <td>${p.name}</td>
+      <td><span class="cat-tag">${p.note.includes('3-pedal') ? '3-pedal' : (p.note.includes('dual') ? '2-pedal' : '?')}</span></td>
+      <td><span class="price-val">$${p.price}</span></td>
+      <td style="font-size:12px;color:var(--text-muted)">${sensor}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== Bundles Table =====
+function populateBundlesTable() {
+  const tbody = document.getElementById('tbody-bundles');
+  tbody.innerHTML = '';
+  const bundles = RACING_PRODUCTS.filter(p => p.cat === 'Bundle');
+  bundles.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+      <td>${p.name}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${p.note || 'Base+Wheel+Pedals'}</td>
+      <td><span class="price-val">$${p.price}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== Brands Table =====
+function populateBrandsTable() {
+  const tbody = document.getElementById('tbody-brands');
+  tbody.innerHTML = '';
+  const allProducts = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
+  const brands = [...new Set(allProducts.map(p => p.brand))];
+  brands.forEach(brand => {
+    const items = allProducts.filter(p => p.brand === brand);
+    const prices = items.map(p => p.price);
+    const minP = Math.min(...prices);
+    const maxP = Math.max(...prices);
+    const entry = items.find(p => p.price === minP);
+    const flagship = items.find(p => p.price === maxP);
+    let positioning = 'Mid-range';
+    if (minP < 150 && maxP < 400) positioning = 'Budget / Entry';
+    else if (minP >= 150 && maxP < 700) positioning = 'Mid-range';
+    else if (minP >= 300 || maxP >= 1000) positioning = 'High-end / Pro';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="brand-tag brand-${brand.toLowerCase().replace(/[^a-z0-9]/g,'')}">${brand}</span></td>
+      <td style="text-align:center">${items.length}</td>
+      <td>$${minP} — $${maxP}</td>
+      <td style="font-size:12px">${entry ? entry.name : '—'}</td>
+      <td style="font-size:12px">${flagship ? flagship.name : '—'}</td>
+      <td><span class="cat-tag">${positioning}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  // Populate tables
+  populateTable('tbody-racing', RACING_PRODUCTS);
+  populateTable('tbody-flight', FLIGHT_PRODUCTS);
+  populateBasesTable();
+  populateWheelsTable();
+  populatePedalsTable();
+  populateBundlesTable();
+  populateBrandsTable();
+
+  // Render charts
+  renderOverviewBases();
+  renderOverviewCount();
+  renderOverviewSegment();
+  renderOverviewFlight();
+  renderRacingCat();
+  renderBasesScatter();
+  renderBasesValue();
+  renderBasesBar();
+  renderWheelsBar();
+  renderPedalsBar();
+  renderBundlesBar();
+  renderFlightCat();
+});
+
+// ===== EXPORT TO CSV =====
+function exportTableToCSV(tableId, filename) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const rows = table.querySelectorAll('tr');
+  const csv = [];
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('th, td');
+    const rowData = [];
+    cells.forEach(cell => {
+      let text = cell.textContent.trim().replace(/"/g, '""');
+      // Remove brand tags and other HTML artifacts
+      text = text.replace(/\s+/g, ' ');
+      rowData.push('"' + text + '"');
+    });
+    csv.push(rowData.join(','));
+  });
+  const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', filename + '.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exportAllProducts() {
+  const allProducts = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
+  let csv = '"Brand","Category","Product Name","Price (USD)","Notes"\n';
+  allProducts.forEach(p => {
+    csv += `"${p.brand}","${p.cat}","${p.name.replace(/"/g, '""')}",${p.price},"${p.note || ''}"\n`;
+  });
+  const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  const link = document.createElement('a');
+  link.setAttribute('href', csvContent);
+  link.setAttribute('download', 'MOZA_Competitor_Prices_' + new Date().toISOString().slice(0,10) + '.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+</body>
+</html>

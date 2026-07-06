@@ -1,0 +1,9 @@
+# Ignore files
+*.pyc
+__pycache__/
+*.log
+clean_html.py
+node_modules/
+.DS_Store
+*.swp
+*.swo
