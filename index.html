@@ -164,32 +164,32 @@ tr:hover { background: rgba(255,255,255,0.02); }
   <!-- ===== SIDEBAR ===== -->
   <div class="sidebar">
     <div class="nav-section-label">Overview</div>
-    <div class="nav-item active" onclick="showPage('page-overview')">
+    <div class="nav-item active" onclick="showPage('page-overview', event)">
       <span class="nav-icon">📊</span> Dashboard
     </div>
-    <div class="nav-item" onclick="showPage('page-racing')">
+    <div class="nav-item" onclick="showPage('page-racing', event)">
       <span class="nav-icon">🏎️</span> Racing Sim
       <span class="nav-badge">5</span>
     </div>
-    <div class="nav-item" onclick="showPage('page-flight')">
+    <div class="nav-item" onclick="showPage('page-flight', event)">
       <span class="nav-icon">✈️</span> Flight Sim
       <span class="nav-badge">4</span>
     </div>
     <div class="nav-section-label">By Category</div>
-    <div class="nav-item" onclick="showPage('page-bases')">
+    <div class="nav-item" onclick="showPage('page-bases', event)">
       <span class="nav-icon">🔧</span> Wheel Bases
     </div>
-    <div class="nav-item" onclick="showPage('page-wheels')">
+    <div class="nav-item" onclick="showPage('page-wheels', event)">
       <span class="nav-icon">🎯</span> Steering Wheels
     </div>
-    <div class="nav-item" onclick="showPage('page-pedals')">
+    <div class="nav-item" onclick="showPage('page-pedals', event)">
       <span class="nav-icon">🦶</span> Pedals
     </div>
-    <div class="nav-item" onclick="showPage('page-bundles')">
+    <div class="nav-item" onclick="showPage('page-bundles', event)">
       <span class="nav-icon">📦</span> Bundles
     </div>
     <div class="nav-section-label">Brands</div>
-    <div class="nav-item" onclick="showPage('page-brands')">
+    <div class="nav-item" onclick="showPage('page-brands', event)">
       <span class="nav-icon">🏷️</span> Brand Summary
     </div>
   </div>
@@ -210,14 +210,14 @@ tr:hover { background: rgba(255,255,255,0.02); }
         <div class="stat-card blue"><div class="stat-label">Brands Compared</div><div class="stat-value">8</div><div class="stat-sub">MOZA + 7 competitors</div></div>
         <div class="stat-card red"><div class="stat-label">Racing Products</div><div class="stat-value">85+</div><div class="stat-sub">Across all brands</div></div>
         <div class="stat-card cyan"><div class="stat-label">Flight Products</div><div class="stat-value">40+</div><div class="stat-sub">MOZA + competitors</div></div>
-        <div class="stat-card green"><div class="stat-label">MOZA Racing SKUs</div><div class="stat-value">54</div><div class="stat-sub">RS series MSRP</div></div>
-        <div class="stat-card yellow"><div class="stat-label">MOZA Flight SKUs</div><div class="stat-value">18</div><div class="stat-sub">AS series MSRP</div></div>
+        <div class="stat-card green"><div class="stat-label">MOZA Racing SKUs</div><div class="stat-value">24</div><div class="stat-sub">RS series MSRP</div></div>
+        <div class="stat-card yellow"><div class="stat-label">MOZA Flight SKUs</div><div class="stat-value">19</div><div class="stat-sub">AS series MSRP</div></div>
         <div class="stat-card purple"><div class="stat-label">Categories</div><div class="stat-value">9</div><div class="stat-sub">Bases/Wheels/Pedals/etc.</div></div>
       </div>
 
       <div class="note">
         <strong>📌 Data Sources:</strong> ALL prices sourced from official brand websites (Jul 2026). MOZA: us.mozaracing.com | Fanatec: fanatec.com | Simagic: simagic-usa.myshopify.com | Logitech: logitechg.com | Thrustmaster: eshop.thrustmaster.com | PXN: us.e-pxn.com | Thermaltake: thermaltakeusa.com | Honeycomb: flyhoneycomb.com. Prices in <strong>USD</strong>.<br>
-        <strong>🏆 MOZA Competitive Highlights:</strong> MOZA R9 V3 (9Nm, <strong>$299</strong>) significantly undercuts Fanatec CSL DD (5Nm, $399.99) and matches Simagic EVO Sport (9Nm, $399). MOZA R21 Ultra (21Nm, $699) vs Fanatec Podium DD (25Nm, $1,199) — <strong>42% price advantage</strong> at high torque. MOZA flight sim lineup (AS series, 18 SKUs) has few direct competitors — most brands only offer partial flight product lines.
+        <strong>🏆 MOZA Competitive Highlights:</strong> MOZA R9 V3 (9Nm, <strong>$299</strong>) significantly undercuts Fanatec CSL DD (5Nm, $399.99) and matches Simagic EVO Sport (9Nm, $399). MOZA R21 Ultra (21Nm, $699) vs Fanatec Podium DD (25Nm, $1,199) — <strong>42% price advantage</strong> at high torque. MOZA flight sim lineup (AS series, 19 SKUs) has few direct competitors — most brands only offer partial flight product lines.
       </div>
 
       <!-- Key Insights Cards -->
@@ -227,17 +227,17 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="stat-card green" style="border-left:4px solid var(--green);">
             <div style="font-weight:700;margin-bottom:8px;">✅ MOZA Advantages</div>
             <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
-              • <strong>R9 V3 ($329, 9Nm)</strong> best value in 9Nm class<br>
+              • <strong>R9 V3 ($299, 9Nm)</strong> best value in 9Nm class<br>
               • <strong>R21 Ultra ($699, 21Nm)</strong> unmatched at high torque<br>
-              • <strong>Flight sim lineup</strong> — 18 SKUs vs competitors' 2-6<br>
+              • <strong>Flight sim lineup</strong> — 19 SKUs vs competitors' 2-6<br>
               • <strong>Bundle pricing</strong> competitive at entry level<br>
-              • <strong>mBooster ($799)</strong> unique active pedal offering
+              • <strong>mBooster ($759)</strong> unique active pedal offering
             </div>
           </div>
           <div class="stat-card red" style="border-left:4px solid var(--red);">
             <div style="font-weight:700;margin-bottom:8px;">⚠️ MOZA Disadvantages</div>
             <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
-              • <strong>Entry level</strong> — Logitech G29 ($249) cheaper than MOZA R3 ($279)<br>
+              • <strong>Entry level</strong> — Logitech G29 ($199) is a budget alternative<br>
               • <strong>Simagic EVO Pro (18Nm, $699)</strong> vs MOZA R21 Ultra ($699, 21Nm) — similar price, Simagic has premium brand perception<br>
               • <strong>Fanatec CSL DD</strong> has stronger console compatibility<br>
               • <strong>Pedal range</strong> — Fanatec ClubSport V3 ($429) established competitor
@@ -246,9 +246,9 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="stat-card blue" style="border-left:4px solid var(--blue);">
             <div style="font-weight:700;margin-bottom:8px;">🚀 Market Opportunities</div>
             <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
-              • <strong>Flight sim growth</strong> — MOZA has 18 SKUs, competitors 2-6<br>
-              • <strong>Mid-range DD</strong> — R12 V2 ($429, 12Nm) vs Simagic EVO ($549)<br>
-              • <strong>Console market</strong> — R3 Xbox bundle targets console sim racers<br>
+              • <strong>Flight sim growth</strong> — MOZA has 19 SKUs, competitors 2-6<br>
+              • <strong>Mid-range DD</strong> — R12 V2 ($399, 12Nm) vs Simagic EVO ($549)<br>
+              • <strong>Console market</strong> — potential for Xbox-compatible DD bundles<br>
               • <strong>Truck sim</strong> — TSW wheel + truck bundle unique positioning<br>
               • <strong>Active pedal market</strong> — mBooster early mover advantage
             </div>
@@ -256,8 +256,8 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="stat-card yellow" style="border-left:4px solid var(--yellow);">
             <div style="font-weight:700;margin-bottom:8px;">📊 Price Positioning</div>
             <div style="font-size:12px;line-height:1.8;color:var(--text-muted);">
-              • <strong>Entry (9Nm):</strong> MOZA R9 V3 $329 vs Simagic $399 — <span style="color:var(--green)">MOZA +17% cheaper</span><br>
-              • <strong>Mid (12Nm):</strong> MOZA R12 V2 $429 vs Simagic $549 — <span style="color:var(--green)">MOZA +22% cheaper</span><br>
+              • <strong>Entry (9Nm):</strong> MOZA R9 V3 $299 vs Simagic $399 — <span style="color:var(--green)">MOZA +25% cheaper</span><br>
+              • <strong>Mid (12Nm):</strong> MOZA R12 V2 $399 vs Simagic $549 — <span style="color:var(--green)">MOZA +27% cheaper</span><br>
               • <strong>High (21Nm):</strong> MOZA R21 Ultra $699 vs Fanatec $1,199 — <span style="color:var(--green)">MOZA +42% cheaper</span><br>
               • <strong>Flight:</strong> MOZA AB9 ($499) vs Honeycomb Alpha ($249) — <span style="color:var(--red)">MOZA +100% premium</span>
             </div>
@@ -527,13 +527,18 @@ tr:hover { background: rgba(255,255,255,0.02); }
 // ===== DATA is loaded from data/prices.js =====
 
 // ===== PAGE NAV =====
-function showPage(pageId) {
+function showPage(pageId, evt) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
-  event.currentTarget.classList.add('active');
-  // Resize charts after page shown
-  setTimeout(() => Chart.instances.forEach(c => c.resize()), 100);
+  if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+  // Resize all charts after page shown (fixes hidden-page sizing)
+  setTimeout(() => {
+    document.querySelectorAll('canvas[id^="chart-"]').forEach(canvas => {
+      const chart = Chart.getChart(canvas);
+      if (chart) chart.resize();
+    });
+  }, 150);
 }
 
 // ===== TABLE POPULATION =====
@@ -955,11 +960,21 @@ function populatePedalsTable() {
   tbody.innerHTML = '';
   const pedals = RACING_PRODUCTS.filter(p => p.cat === 'Pedal');
   pedals.forEach(p => {
-    const sensor = p.note.includes('Hall') ? 'Hall Effect' : (p.price > 300 ? 'Load Cell' : 'Potentiometer');
+    const note = (p.note || '').toLowerCase();
+    // Sensor detection: explicit keywords > price threshold
+    let sensor = 'Potentiometer';
+    if (note.includes('hall')) sensor = 'Hall Effect';
+    else if (note.includes('load cell') || note.includes('loadcell') || p.price > 300) sensor = 'Load Cell';
+    // Type detection: explicit keywords
+    let type = '?';
+    if (note.includes('3-pedal')) type = '3-pedal';
+    else if (note.includes('dual') || note.includes('2-pedal')) type = '2-pedal';
+    else if (note.includes('clutch')) type = '3-pedal';
+
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase().replace(/[^a-z0-9]/g,'')}">${p.brand}</span></td>
       <td>${p.name}</td>
-      <td><span class="cat-tag">${p.note.includes('3-pedal') ? '3-pedal' : (p.note.includes('dual') ? '2-pedal' : '?')}</span></td>
+      <td><span class="cat-tag">${type}</span></td>
       <td><span class="price-val">$${p.price}</span></td>
       <td style="font-size:12px;color:var(--text-muted)">${sensor}</td>`;
     tbody.appendChild(tr);
@@ -1010,6 +1025,76 @@ function populateBrandsTable() {
 }
 
 
+// ===== CHART: Brands Heat (avg price by category per brand) =====
+function renderBrandsHeat() {
+  const ctx = document.getElementById('chart-brands-heat').getContext('2d');
+  const allProducts = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
+  const brands = [...new Set(allProducts.map(p => p.brand))];
+  const cats = [...new Set(allProducts.map(p => p.cat))];
+  const datasets = brands.map(brand => ({
+    label: brand,
+    data: cats.map(cat => {
+      const items = allProducts.filter(p => p.brand === brand && p.cat === cat);
+      return items.length > 0 ? Math.round(items.reduce((s, p) => s + p.price, 0) / items.length) : null;
+    }),
+    backgroundColor: BRAND_COLORS[brand] + '33',
+    borderColor: BRAND_COLORS[brand],
+    borderWidth: 2,
+    pointRadius: 4,
+    spanGaps: true,
+  }));
+  new Chart(ctx, {
+    type: 'radar',
+    data: { labels: cats, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#8892a4', boxWidth: 12, font: { size: 10 } } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: $${c.parsed.r}` } }
+      },
+      scales: {
+        r: {
+          ticks: { color: '#8892a4', backdropColor: 'transparent', font: { size: 9 } },
+          grid: { color: '#2d3148' },
+          angleLines: { color: '#2d3148' },
+          pointLabels: { color: '#8892a4', font: { size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+// ===== CHART: Brands Range (min-max price range per brand) =====
+function renderBrandsRange() {
+  const ctx = document.getElementById('chart-brands-range').getContext('2d');
+  const allProducts = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
+  const brands = [...new Set(allProducts.map(p => p.brand))];
+  const ranges = brands.map(brand => {
+    const prices = allProducts.filter(p => p.brand === brand).map(p => p.price);
+    return { brand, min: Math.min(...prices), max: Math.max(...prices), avg: Math.round(prices.reduce((a,b)=>a+b,0)/prices.length) };
+  });
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: brands,
+      datasets: [
+        { label: 'Min Price', data: ranges.map(r => r.min), backgroundColor: '#2dc65388', borderColor: '#2dc653', borderWidth: 1, borderRadius: 4 },
+        { label: 'Avg Price', data: ranges.map(r => r.avg), backgroundColor: '#4895ef88', borderColor: '#4895ef', borderWidth: 1, borderRadius: 4 },
+        { label: 'Max Price', data: ranges.map(r => r.max), backgroundColor: '#e6394688', borderColor: '#e63946', borderWidth: 1, borderRadius: 4 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8892a4', boxWidth: 12, font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#8892a4', maxRotation: 45, font: { size: 10 } }, grid: { color: '#2d3148' } },
+        y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: 'Price (USD)', color: '#8892a4' } }
+      }
+    }
+  });
+}
+
+
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', () => {
   // Populate tables
@@ -1034,6 +1119,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderPedalsBar();
   renderBundlesBar();
   renderFlightCat();
+  renderBrandsHeat();
+  renderBrandsRange();
 });
 
 // ===== EXPORT TO CSV =====
