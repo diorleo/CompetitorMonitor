@@ -7,3 +7,9 @@ node_modules/
 .DS_Store
 *.swp
 *.swo
+
+# WorkBuddy internal files
+.workbuddy/
+
+# Excel data file
+competitorMonitor.xlsx
