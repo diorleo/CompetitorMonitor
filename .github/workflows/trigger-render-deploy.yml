@@ -1,0 +1,24 @@
+name: Trigger Render Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger Render Deploy Hook
+      run: |
+        if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+          echo "::warning::RENDER_DEPLOY_HOOK_URL secret not set. Skipping deploy trigger."
+          echo "To enable auto-deploy via this action:"
+          echo "1. Go to Render Dashboard > CompeteMonitor service > Settings > Deploy Hook"
+          echo "2. Copy the Deploy Hook URL"
+          echo "3. Add it to GitHub: Repo Settings > Secrets > Actions > RENDER_DEPLOY_HOOK_URL"
+          exit 0
+        fi
+        echo "Triggering Render deploy via deploy hook..."
+        curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        echo "Deploy triggered."
