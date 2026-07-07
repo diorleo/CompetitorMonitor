@@ -19,14 +19,16 @@ const BRAND_COLORS = {
 
 // Racing sim products data — MOZA prices from us.mozaracing.com (Jul 2026)
 const RACING_PRODUCTS = [
-  // --- MOZA RS series (official USD prices) ---
-  { brand: 'MOZA', cat: 'Bundle', name: 'R5 Racing Simulator Bundle', price: 379, note: 'Sale $599→$379' },
-  { brand: 'MOZA', cat: 'Bundle', name: 'R5 Trucking Bundle', price: 379, note: 'Sale $599→$379' },
+  // --- MOZA RS series (official USD prices from us.mozaracing.com) ---
+  { brand: 'MOZA', cat: 'Bundle', name: 'R3 Racing Bundle for PC', price: 259, note: 'Sale $299→$259, 3.9Nm' },
+  { brand: 'MOZA', cat: 'Bundle', name: 'R3 Racing Bundle for XBOX & PC', price: 319, note: 'Sale $399→$319, 3.9Nm' },
+  { brand: 'MOZA', cat: 'Bundle', name: 'R5 Racing Simulator Bundle', price: 379, note: 'Sale $599→$379, 5.5Nm' },
+  { brand: 'MOZA', cat: 'Bundle', name: 'R5 Trucking Bundle', price: 469, note: 'Sale $549→$469, 5.5Nm' },
   { brand: 'MOZA', cat: 'Wheel Base', name: 'R9 V3 Direct Drive (9Nm)', price: 299, note: 'Sale $349→$299' },
   { brand: 'MOZA', cat: 'Wheel Base', name: 'R12 V2 Direct Drive (12Nm)', price: 399, note: 'Sale $469→$399' },
   { brand: 'MOZA', cat: 'Wheel Base', name: 'R21 Ultra Direct Drive (21Nm)', price: 699, note: '21Nm' },
   { brand: 'MOZA', cat: 'Wheel Base', name: 'R25 Ultra True Torque (25Nm)', price: 899, note: '25Nm' },
-  { brand: 'MOZA', cat: 'Steering Wheel', name: 'ES Steering Wheel', price: 129, note: 'Entry' },
+  { brand: 'MOZA', cat: 'Steering Wheel', name: 'ESX Steering Wheel', price: 129, note: 'PC & Xbox, Sale $139→$129' },
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'CS V2P Steering Wheel', price: 229, note: 'Sale $279→$229' },
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'CS Pro Steering Wheel', price: 329, note: '325mm' },
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'RS V2 Steering Wheel', price: 369, note: 'Sale $439→$369' },
@@ -37,6 +39,7 @@ const RACING_PRODUCTS = [
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'Vision GS Steering Wheel', price: 699, note: 'Sale $749→$699' },
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'TSW Truck Wheel', price: 229, note: 'Sale $299→$229' },
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'Lamborghini Essenza SCV12', price: 1299, note: 'Licensed' },
+  { brand: 'MOZA', cat: 'Steering Wheel', name: 'Lamborghini Revuelto', price: 399, note: 'Licensed, 340mm' },
   { brand: 'MOZA', cat: 'Steering Wheel', name: 'Porsche MISSION R SW', price: 1299, note: 'Licensed' },
   { brand: 'MOZA', cat: 'Pedal', name: 'SRP2 Pedals', price: 149, note: 'Dual 100kg' },
   { brand: 'MOZA', cat: 'Pedal', name: 'CRP2 Load Cell Pedals', price: 369, note: 'Sale $399→$369' },
