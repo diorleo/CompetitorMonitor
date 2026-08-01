@@ -1,6 +1,6 @@
 // prices.js — Product price data for MOZA Competitor Price Monitor
 // Auto-updated by GitHub Actions (monthly)
-// Last manual update: 2026-07
+// Last manual update: 2026-08
 
 const BRAND_COLORS = {
   'MOZA': '#e63946',
