@@ -13,3 +13,6 @@ node_modules/
 
 # Excel data file
 competitorMonitor.xlsx
+
+# Scraper debug output
+data/scrape_debug/
