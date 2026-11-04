@@ -50,8 +50,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Segoe U
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; cursor: pointer; color: var(--text-muted); font-size: 13px; font-weight: 500; transition: all 0.15s; border-left: 3px solid transparent; }
 .nav-item:hover { background: var(--bg-card2); color: var(--text); }
 .nav-item.active { background: rgba(230, 57, 70, 0.1); color: var(--accent); border-left-color: var(--accent); }
+.nav-item:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 .nav-item .nav-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
 .nav-badge { margin-left: auto; background: var(--accent); color: white; border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+
+/* ===== Mobile Nav (shown when sidebar is hidden) ===== */
+.mobile-nav { display: none; }
 
 /* ===== Main Content ===== */
 .main { flex: 1; overflow-y: auto; padding: 24px; scroll-behavior: smooth; }
@@ -99,14 +103,20 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Segoe U
 .toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .search-input { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; color: var(--text); font-size: 13px; width: 220px; outline: none; transition: border-color 0.2s; }
 .search-input:focus { border-color: var(--blue); }
+.row-count { font-size: 12px; color: var(--text-muted); margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .filter-select { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; color: var(--text); font-size: 13px; outline: none; cursor: pointer; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: var(--bg-card2); color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { background: var(--bg-card2); color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; position: sticky; top: 0; z-index: 2; }
 th:hover { color: var(--text); }
 td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:nth-child(even) { background: rgba(255,255,255,0.015); }
 tr:last-child td { border-bottom: none; }
-tr:hover { background: rgba(255,255,255,0.02); }
+tbody tr:hover { background: rgba(255,255,255,0.045); }
+/* MOZA's own products highlighted (this is a MOZA competitor monitor) */
+tbody tr.row-moza { background: rgba(230,57,70,0.06); }
+tbody tr.row-moza:hover { background: rgba(230,57,70,0.12); }
+tbody tr.row-moza td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
 .brand-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
 .brand-moza { background: rgba(230,57,70,0.15); color: var(--accent); }
 .brand-fanatec { background: rgba(72,149,239,0.15); color: var(--blue); }
@@ -121,6 +131,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
 .price-mid { color: var(--yellow); }
 .price-high { color: var(--red); }
 .cat-tag { font-size: 11px; color: var(--text-muted); background: var(--bg-card2); padding: 2px 8px; border-radius: 4px; }
+.empty-state { display: none; padding: 32px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
 
 /* ===== Category Tabs ===== */
 .cat-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -135,8 +146,17 @@ tr:hover { background: rgba(255,255,255,0.02); }
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .sidebar { display: none; }
+  .mobile-nav { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); flex-shrink: 0; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .mobile-nav-link { flex-shrink: 0; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); background: var(--bg-card2); text-decoration: none; white-space: nowrap; transition: all 0.15s; }
+  .mobile-nav-link.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .layout { flex-direction: column; }
+  .main { padding: 16px; }
   .chart-grid { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .header { padding: 0 12px; gap: 8px; }
+  .header-title { font-size: 14px; }
+  .header-subtitle { display: none; }
+  .header .btn { font-size: 12px; padding: 6px 10px; }
 }
 </style>
 </head>
@@ -155,7 +175,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
   <button class="btn" onclick="exportAllProducts()" title="Export all product data to CSV" style="margin-right:12px">
     📥 Export All Data
   </button>
-  <div style="font-size:12px;color:var(--text-muted);">Data: Jul 2026 | Build: v2.1</div>
+  <div style="font-size:12px;color:var(--text-muted);" id="header-meta">Loading…</div>
 </div>
 
 <!-- ===== LAYOUT ===== -->
@@ -164,35 +184,47 @@ tr:hover { background: rgba(255,255,255,0.02); }
   <!-- ===== SIDEBAR ===== -->
   <div class="sidebar">
     <div class="nav-section-label">Overview</div>
-    <div class="nav-item active" onclick="showPage('page-overview', event)">
+    <div class="nav-item active" data-page="page-overview" role="button" tabindex="0" onclick="showPage('page-overview', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">📊</span> Dashboard
     </div>
-    <div class="nav-item" onclick="showPage('page-racing', event)">
+    <div class="nav-item" data-page="page-racing" role="button" tabindex="0" onclick="showPage('page-racing', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">🏎️</span> Racing Sim
       <span class="nav-badge">5</span>
     </div>
-    <div class="nav-item" onclick="showPage('page-flight', event)">
+    <div class="nav-item" data-page="page-flight" role="button" tabindex="0" onclick="showPage('page-flight', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">✈️</span> Flight Sim
       <span class="nav-badge">4</span>
     </div>
     <div class="nav-section-label">By Category</div>
-    <div class="nav-item" onclick="showPage('page-bases', event)">
+    <div class="nav-item" data-page="page-bases" role="button" tabindex="0" onclick="showPage('page-bases', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">🔧</span> Wheel Bases
     </div>
-    <div class="nav-item" onclick="showPage('page-wheels', event)">
+    <div class="nav-item" data-page="page-wheels" role="button" tabindex="0" onclick="showPage('page-wheels', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">🎯</span> Steering Wheels
     </div>
-    <div class="nav-item" onclick="showPage('page-pedals', event)">
+    <div class="nav-item" data-page="page-pedals" role="button" tabindex="0" onclick="showPage('page-pedals', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">🦶</span> Pedals
     </div>
-    <div class="nav-item" onclick="showPage('page-bundles', event)">
+    <div class="nav-item" data-page="page-bundles" role="button" tabindex="0" onclick="showPage('page-bundles', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">📦</span> Bundles
     </div>
     <div class="nav-section-label">Brands</div>
-    <div class="nav-item" onclick="showPage('page-brands', event)">
+    <div class="nav-item" data-page="page-brands" role="button" tabindex="0" onclick="showPage('page-brands', event)" onkeydown="navKeydown(event)">
       <span class="nav-icon">🏷️</span> Brand Summary
     </div>
   </div>
+
+  <!-- ===== MOBILE NAV (shown ≤900px, sidebar hidden) ===== -->
+  <nav class="mobile-nav" aria-label="Section navigation">
+    <a class="mobile-nav-link active" data-page="page-overview" href="#page-overview" onclick="showPage('page-overview', event)">📊 Dashboard</a>
+    <a class="mobile-nav-link" data-page="page-racing" href="#page-racing" onclick="showPage('page-racing', event)">🏎️ Racing</a>
+    <a class="mobile-nav-link" data-page="page-flight" href="#page-flight" onclick="showPage('page-flight', event)">✈️ Flight</a>
+    <a class="mobile-nav-link" data-page="page-bases" href="#page-bases" onclick="showPage('page-bases', event)">🔧 Bases</a>
+    <a class="mobile-nav-link" data-page="page-wheels" href="#page-wheels" onclick="showPage('page-wheels', event)">🎯 Wheels</a>
+    <a class="mobile-nav-link" data-page="page-pedals" href="#page-pedals" onclick="showPage('page-pedals', event)">🦶 Pedals</a>
+    <a class="mobile-nav-link" data-page="page-bundles" href="#page-bundles" onclick="showPage('page-bundles', event)">📦 Bundles</a>
+    <a class="mobile-nav-link" data-page="page-brands" href="#page-brands" onclick="showPage('page-brands', event)">🏷️ Brands</a>
+  </nav>
 
   <!-- ===== MAIN ===== -->
   <div class="main">
@@ -202,22 +234,22 @@ tr:hover { background: rgba(255,255,255,0.02); }
       <div class="page-header">
         <div>
           <div class="page-title">Competitor Price Dashboard</div>
-          <div class="page-subtitle">MOZA vs 7 competitors across racing & flight simulation categories</div>
+          <div class="page-subtitle" id="page-overview-sub">MOZA vs competitors across racing &amp; flight simulation categories</div>
         </div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card blue"><div class="stat-label">Brands Compared</div><div class="stat-value">8</div><div class="stat-sub">MOZA + 7 competitors</div></div>
-        <div class="stat-card red"><div class="stat-label">Racing Products</div><div class="stat-value">88+</div><div class="stat-sub">Across all brands</div></div>
-        <div class="stat-card cyan"><div class="stat-label">Flight Products</div><div class="stat-value">40+</div><div class="stat-sub">MOZA + competitors</div></div>
-        <div class="stat-card green"><div class="stat-label">MOZA Racing SKUs</div><div class="stat-value">27</div><div class="stat-sub">Official website prices</div></div>
-        <div class="stat-card yellow"><div class="stat-label">MOZA Flight SKUs</div><div class="stat-value">19</div><div class="stat-sub">Official website prices</div></div>
-        <div class="stat-card purple"><div class="stat-label">Categories</div><div class="stat-value">9</div><div class="stat-sub">Bases/Wheels/Pedals/etc.</div></div>
+      <div class="stats-grid" id="stats-overview">
+        <div class="stat-card blue"><div class="stat-label">Brands Compared</div><div class="stat-value" id="stat-brands">—</div><div class="stat-sub" id="stat-brands-sub">Computing…</div></div>
+        <div class="stat-card red"><div class="stat-label">Racing Products</div><div class="stat-value" id="stat-racing">—</div><div class="stat-sub">Across all brands</div></div>
+        <div class="stat-card cyan"><div class="stat-label">Flight Products</div><div class="stat-value" id="stat-flight">—</div><div class="stat-sub">MOZA + competitors</div></div>
+        <div class="stat-card green"><div class="stat-label">MOZA Racing SKUs</div><div class="stat-value" id="stat-moza-racing">—</div><div class="stat-sub">Official website prices</div></div>
+        <div class="stat-card yellow"><div class="stat-label">MOZA Flight SKUs</div><div class="stat-value" id="stat-moza-flight">—</div><div class="stat-sub">Official website prices</div></div>
+        <div class="stat-card purple"><div class="stat-label">Categories</div><div class="stat-value" id="stat-cats">—</div><div class="stat-sub">Bases/Wheels/Pedals/etc.</div></div>
       </div>
 
       <div class="note">
-        <strong>📌 Data Sources:</strong> ALL prices sourced from official brand websites (Jul 2026). MOZA: us.mozaracing.com | Fanatec: fanatec.com | Simagic: simagic-usa.myshopify.com | Logitech: logitechg.com | Thrustmaster: eshop.thrustmaster.com | PXN: us.e-pxn.com | Thermaltake: thermaltakeusa.com | Honeycomb: flyhoneycomb.com. Prices in <strong>USD</strong>.<br>
-        <strong>🏆 MOZA Competitive Highlights:</strong> MOZA R3 Bundle (3.9Nm, <strong>$259</strong>) is the most affordable direct drive bundle on the market. MOZA R9 V3 (9Nm, <strong>$299</strong>) significantly undercuts Fanatec CSL DD (5Nm, $399.99) and matches Simagic EVO Sport (9Nm, $399). MOZA R21 Ultra (21Nm, $699) vs Fanatec Podium DD (25Nm, $1,199) — <strong>42% price advantage</strong> at high torque. New Lamborghini Revuelto wheel ($399) expands licensed offerings. MOZA flight sim lineup (AS series, 19 SKUs) has few direct competitors — most brands only offer partial flight product lines.
+        <strong>📌 Data Sources:</strong> All prices sourced from official brand websites. MOZA: us.mozaracing.com | Fanatec: fanatec.com | Simagic: simagic-usa.myshopify.com | Logitech: logitechg.com | Thrustmaster: eshop.thrustmaster.com | Asetek: asetek.com | PXN: us.e-pxn.com | Thermaltake: thermaltakeusa.com | Honeycomb: flyhoneycomb.com | Virpil: virpil-controls.eu | VKB: vkbcontrollers.com | Winwing: winwingsim.com. Prices in <strong>USD</strong>.<br>
+        <strong>🏆 MOZA Competitive Highlights:</strong> MOZA R3 Bundle (3.9Nm, <strong>$259</strong>) is the most affordable direct drive bundle on the market. MOZA R9 V3 (9Nm, <strong>$299</strong>) significantly undercuts Fanatec CSL DD (5Nm, $399.99) and Simagic EVO Sport (9Nm, $399). MOZA R21 Ultra (21Nm, $699) vs Fanatec Podium DD (25Nm, $1,199) — <strong>42% price advantage</strong> at high torque. New Lamborghini Revuelto wheel ($399) expands licensed offerings. MOZA flight sim lineup (AS series, 19 SKUs) has few direct competitors — most brands only offer partial flight product lines.
       </div>
 
       <!-- Key Insights Cards -->
@@ -318,8 +350,8 @@ tr:hover { background: rgba(255,255,255,0.02); }
       <div class="card">
         <div class="card-header"><div class="card-title">All Racing Sim Products — Price Comparison</div></div>
         <div class="toolbar">
-          <input class="search-input" placeholder="🔍 Search product..." oninput="filterTable('table-racing', this.value)">
-          <select class="filter-select" onchange="filterTableCol('table-racing', 1, this.value)">
+          <input class="search-input" id="search-racing" placeholder="🔍 Search product..." oninput="applyRacingFilters()">
+          <select class="filter-select" id="filter-racing-brand" onchange="applyRacingFilters()">
             <option value="">All Brands</option>
             <option value="MOZA">MOZA</option>
             <option value="Fanatec">Fanatec</option>
@@ -330,6 +362,13 @@ tr:hover { background: rgba(255,255,255,0.02); }
             <option value="PXN">PXN</option>
             <option value="Thermaltake">Thermaltake</option>
           </select>
+          <select class="filter-select" id="filter-racing-sort" onchange="applyRacingFilters()">
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="brand">Brand A → Z</option>
+          </select>
+          <span class="row-count" id="count-racing"></span>
         </div>
         <div class="table-wrap">
           <table id="table-racing">
@@ -337,6 +376,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
             <tbody id="tbody-racing"></tbody>
           </table>
         </div>
+        <div class="empty-state" id="empty-racing">🔍 No products match your filters.</div>
       </div>
     </div>
 
@@ -347,6 +387,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="page-title">✈️ Flight Simulation Products</div>
           <div class="page-subtitle">Compare MOZA AS series vs competitors — yokes, sticks, throttles, rudder pedals</div>
         </div>
+        <button class="btn" onclick="exportTableToCSV('table-flight', 'Flight_Sim_Products')">📥 Export CSV</button>
       </div>
       <div class="cat-tabs">
         <div class="cat-tab active" onclick="filterFlightTab('all', this)">All</div>
@@ -365,15 +406,25 @@ tr:hover { background: rgba(255,255,255,0.02); }
       <div class="card">
         <div class="card-header"><div class="card-title">All Flight Sim Products — Price Comparison</div></div>
         <div class="toolbar">
-          <input class="search-input" placeholder="🔍 Search product..." oninput="filterTable('table-flight', this.value)">
-          <select class="filter-select" onchange="filterTableCol('table-flight', 0, this.value)">
+          <input class="search-input" id="search-flight" placeholder="🔍 Search product..." oninput="applyFlightFilters()">
+          <select class="filter-select" id="filter-flight-brand" onchange="applyFlightFilters()">
             <option value="">All Brands</option>
             <option value="MOZA">MOZA</option>
             <option value="Logitech">Logitech</option>
             <option value="Thrustmaster">Thrustmaster</option>
             <option value="PXN">PXN</option>
             <option value="Honeycomb">Honeycomb</option>
+            <option value="Virpil">Virpil</option>
+            <option value="VKB">VKB</option>
+            <option value="Winwing">Winwing</option>
           </select>
+          <select class="filter-select" id="filter-flight-sort" onchange="applyFlightFilters()">
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="brand">Brand A → Z</option>
+          </select>
+          <span class="row-count" id="count-flight"></span>
         </div>
         <div class="table-wrap">
           <table id="table-flight">
@@ -381,6 +432,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
             <tbody id="tbody-flight"></tbody>
           </table>
         </div>
+        <div class="empty-state" id="empty-flight">🔍 No products match your filters.</div>
       </div>
     </div>
 
@@ -391,6 +443,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="page-title">🔧 Wheel Bases / Direct Drive — Detailed Comparison</div>
           <div class="page-subtitle">Torque (Nm) vs Price — MOZA vs all competitors</div>
         </div>
+        <button class="btn" onclick="exportTableToCSV('table-bases', 'Wheel_Bases')">📥 Export CSV</button>
       </div>
       <div class="chart-grid">
         <div class="chart-card">
@@ -424,6 +477,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="page-title">🎯 Steering Wheels — Price Comparison</div>
           <div class="page-subtitle">Compare steering wheel prices across all brands</div>
         </div>
+        <button class="btn" onclick="exportTableToCSV('table-wheels', 'Steering_Wheels')">📥 Export CSV</button>
       </div>
       <div class="chart-grid">
         <div class="chart-card full">
@@ -449,6 +503,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="page-title">🦶 Pedals — Price Comparison</div>
           <div class="page-subtitle">Compare pedal set prices across all brands</div>
         </div>
+        <button class="btn" onclick="exportTableToCSV('table-pedals', 'Pedals')">📥 Export CSV</button>
       </div>
       <div class="chart-grid">
         <div class="chart-card full">
@@ -474,6 +529,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="page-title">📦 Bundles — Ready-to-Race Comparison</div>
           <div class="page-subtitle">Compare bundle prices (base + wheel + pedals)</div>
         </div>
+        <button class="btn" onclick="exportTableToCSV('table-bundles', 'Bundles')">📥 Export CSV</button>
       </div>
       <div class="chart-grid">
         <div class="chart-card full">
@@ -499,6 +555,7 @@ tr:hover { background: rgba(255,255,255,0.02); }
           <div class="page-title">🏷️ Brand Positioning Summary</div>
           <div class="page-subtitle">Price segment & product coverage per brand</div>
         </div>
+        <button class="btn" onclick="exportTableToCSV('table-brands', 'Brand_Summary')">📥 Export CSV</button>
       </div>
       <div class="chart-grid">
         <div class="chart-card">
@@ -528,12 +585,43 @@ tr:hover { background: rgba(255,255,255,0.02); }
 <script>
 // ===== DATA is loaded from data/prices.js =====
 
+// ===== UTILITY HELPERS =====
+// Format a price with thousands separators ($1299 → $1,299; $399.99 → $399.99)
+function fmtPrice(v) {
+  const n = Number(v);
+  if (Number.isInteger(n)) return '$' + n.toLocaleString('en-US');
+  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+// Parse torque (Nm) from a product name/note; returns float or null.
+// Torque appears inconsistently: sometimes in the name's parentheses
+// (e.g. "R9 V3 Direct Drive (9Nm)"), sometimes in the note. Check both.
+function parseNm(name, note) {
+  const combined = (name || '') + ' ' + (note || '');
+  const m = combined.match(/(\d+(?:\.\d+)?)\s*Nm/i);
+  return m ? parseFloat(m[1]) : null;
+}
+// Normalise a brand name for use in CSS classes
+function brandClass(brand) {
+  return 'brand-' + String(brand).toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+// Shorten a product name for chart labels (strip parenthetical spec)
+function shortName(name, max = 24) {
+  return name.replace(/\s*\(.*\)/, '').slice(0, max);
+}
+
 // ===== PAGE NAV =====
+// Syncs active state across BOTH sidebar nav-items and mobile-nav links via data-page.
 function showPage(pageId, evt) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+  const target = document.getElementById(pageId);
+  if (!target) return;
+  target.classList.add('active');
+
+  // Sync every nav element (sidebar + mobile) whose data-page matches
+  document.querySelectorAll('[data-page]').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === pageId);
+  });
+
   // Resize all charts after page shown (fixes hidden-page sizing)
   setTimeout(() => {
     document.querySelectorAll('canvas[id^="chart-"]').forEach(canvas => {
@@ -541,6 +629,18 @@ function showPage(pageId, evt) {
       if (chart) chart.resize();
     });
   }, 150);
+
+  // Scroll main content back to top on navigation
+  const main = document.querySelector('.main');
+  if (main) main.scrollTop = 0;
+}
+
+// Keyboard support for nav items (Enter/Space activate)
+function navKeydown(evt) {
+  if (evt.key === 'Enter' || evt.key === ' ') {
+    evt.preventDefault();
+    evt.currentTarget.click();
+  }
 }
 
 // ===== TABLE POPULATION =====
@@ -549,18 +649,121 @@ function populateTable(tbodyId, data) {
   tbody.innerHTML = '';
   data.forEach(p => {
     const tr = document.createElement('tr');
-    const brandClass = 'brand-' + p.brand.toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Dataset attributes power the unified filter/sort engine
+    tr.dataset.brand = p.brand;
+    tr.dataset.cat = p.cat;
+    tr.dataset.price = p.price;
+    // Highlight MOZA's own products (this is a MOZA competitor monitor)
+    if (p.brand === 'MOZA') tr.classList.add('row-moza');
     const priceClass = p.price > 800 ? 'price-high' : p.price > 350 ? 'price-mid' : 'price-low';
-    tr.innerHTML = `<td><span class="brand-tag ${brandClass}">${p.brand}</span></td>
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass(p.brand)}">${p.brand}</span></td>
       <td><span class="cat-tag">${p.cat}</span></td>
       <td>${p.name}</td>
-      <td><span class="price-val ${priceClass}">$${p.price}</span></td>
+      <td><span class="price-val ${priceClass}">${fmtPrice(p.price)}</span></td>
       <td style="color:var(--text-muted);font-size:12px">${p.note || ''}</td>`;
     tbody.appendChild(tr);
   });
 }
 
-// ===== FILTERS =====
+// ===== UNIFIED FILTER + SORT ENGINE =====
+// Single source of truth so search / brand / category / sort never conflict.
+const TABLE_STATE = {
+  racing: { search: '', brand: '', cat: 'all', sort: 'default', tbody: 'tbody-racing', table: 'table-racing' },
+  flight: { search: '', brand: '', cat: 'all', sort: 'default', tbody: 'tbody-flight', table: 'table-flight' },
+};
+
+function _sortRows(rows, mode) {
+  if (mode === 'default') return rows;
+  const num = el => parseFloat((el.dataset.price || '0').replace(/,/g, '')) || 0;
+  const sorted = rows.slice();
+  if (mode === 'price-asc') sorted.sort((a, b) => num(a) - num(b));
+  else if (mode === 'price-desc') sorted.sort((a, b) => num(b) - num(a));
+  else if (mode === 'brand') sorted.sort((a, b) => (a.dataset.brand || '').localeCompare(b.dataset.brand || ''));
+  return sorted;
+}
+
+function applyFilters(key) {
+  const st = TABLE_STATE[key];
+  if (!st) return;
+  const tbody = document.getElementById(st.tbody);
+  if (!tbody) return;
+  const allRows = Array.from(tbody.querySelectorAll('tr'));
+  const q = st.search.trim().toLowerCase();
+
+  allRows.forEach(r => {
+    let show = true;
+    if (q && !r.textContent.toLowerCase().includes(q)) show = false;
+    if (show && st.brand && r.dataset.brand !== st.brand) show = false;
+    if (show && st.cat !== 'all') {
+      const cat = r.dataset.cat || '';
+      // 'Bundle' must not match 'Bundle Accessory'; exact-ish match on category prefix
+      if (st.cat === 'Base') show = cat === 'Base';
+      else show = cat === st.cat;
+    }
+    r.style.display = show ? '' : 'none';
+  });
+
+  // Re-order visible rows per sort mode
+  const visible = allRows.filter(r => r.style.display !== 'none');
+  _sortRows(visible, st.sort).forEach(r => tbody.appendChild(r));
+
+  // Update the visible-count indicator
+  const counter = document.getElementById('count-' + key);
+  if (counter) counter.textContent = `${visible.length} / ${allRows.length} shown`;
+
+  // Toggle empty-state hint
+  const emptyEl = document.getElementById('empty-' + key);
+  if (emptyEl) emptyEl.style.display = visible.length === 0 ? '' : 'none';
+}
+
+function applyRacingFilters() {
+  const s = document.getElementById('search-racing');
+  const b = document.getElementById('filter-racing-brand');
+  const so = document.getElementById('filter-racing-sort');
+  TABLE_STATE.racing.search = s ? s.value : '';
+  TABLE_STATE.racing.brand = b ? b.value : '';
+  TABLE_STATE.racing.sort = so ? so.value : 'default';
+  applyFilters('racing');
+}
+
+function applyFlightFilters() {
+  const s = document.getElementById('search-flight');
+  const b = document.getElementById('filter-flight-brand');
+  const so = document.getElementById('filter-flight-sort');
+  TABLE_STATE.flight.search = s ? s.value : '';
+  TABLE_STATE.flight.brand = b ? b.value : '';
+  TABLE_STATE.flight.sort = so ? so.value : 'default';
+  applyFilters('flight');
+}
+
+// Category tabs — sync DOM→state first (search/brand/sort may have changed),
+// then set category and re-apply so all filters stay combined.
+function filterRacingTab(cat, el) {
+  document.querySelectorAll('#page-racing .cat-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const s = document.getElementById('search-racing');
+  const b = document.getElementById('filter-racing-brand');
+  const so = document.getElementById('filter-racing-sort');
+  TABLE_STATE.racing.search = s ? s.value : '';
+  TABLE_STATE.racing.brand = b ? b.value : '';
+  TABLE_STATE.racing.sort = so ? so.value : 'default';
+  TABLE_STATE.racing.cat = cat;
+  applyFilters('racing');
+}
+function filterFlightTab(cat, el) {
+  document.querySelectorAll('#page-flight .cat-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const s = document.getElementById('search-flight');
+  const b = document.getElementById('filter-flight-brand');
+  const so = document.getElementById('filter-flight-sort');
+  TABLE_STATE.flight.search = s ? s.value : '';
+  TABLE_STATE.flight.brand = b ? b.value : '';
+  TABLE_STATE.flight.sort = so ? so.value : 'default';
+  TABLE_STATE.flight.cat = cat;
+  applyFilters('flight');
+}
+
+// Legacy helpers kept for the category-detail pages (bases/wheels/pedals...)
 function filterTable(tableId, query) {
   const rows = document.querySelectorAll(`#${tableId} tbody tr`);
   const q = query.toLowerCase();
@@ -574,31 +777,47 @@ function filterTableCol(tableId, colIdx, val) {
     r.style.display = cell && cell.textContent.includes(val) ? '' : 'none';
   });
 }
-function filterRacingTab(cat, el) {
-  document.querySelectorAll('#page-racing .cat-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const rows = document.querySelectorAll('#tbody-racing tr');
-  rows.forEach(r => {
-    if (cat === 'all') { r.style.display = ''; return; }
-    const catCell = r.cells[1];
-    r.style.display = catCell && catCell.textContent.includes(cat) ? '' : 'none';
-  });
-}
-function filterFlightTab(cat, el) {
-  document.querySelectorAll('#page-flight .cat-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  const rows = document.querySelectorAll('#tbody-flight tr');
-  rows.forEach(r => {
-    if (cat === 'all') { r.style.display = ''; return; }
-    const catCell = r.cells[1];
-    r.style.display = catCell && catCell.textContent.includes(cat) ? '' : 'none';
-  });
+
+// ===== DYNAMIC STATS (no hardcoded numbers) =====
+function renderStats() {
+  const all = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
+  const brands = [...new Set(all.map(p => p.brand))];
+  const cats = new Set([...RACING_PRODUCTS.map(p => p.cat), ...FLIGHT_PRODUCTS.map(p => p.cat)]);
+  const mozaRacing = RACING_PRODUCTS.filter(p => p.brand === 'MOZA').length;
+  const mozaFlight = FLIGHT_PRODUCTS.filter(p => p.brand === 'MOZA').length;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('stat-brands', brands.length);
+  set('stat-brands-sub', `MOZA + ${brands.length - 1} competitors`);
+  set('stat-racing', RACING_PRODUCTS.length);
+  set('stat-flight', FLIGHT_PRODUCTS.length);
+  set('stat-moza-racing', mozaRacing);
+  set('stat-moza-flight', mozaFlight);
+  set('stat-cats', cats.size);
+
+  // Sidebar badges
+  const badges = document.querySelectorAll('.nav-item .nav-badge');
+  if (badges[0]) badges[0].textContent = RACING_PRODUCTS.length;
+  if (badges[1]) badges[1].textContent = FLIGHT_PRODUCTS.length;
+
+  // Page subtitle (competitor count)
+  set('page-overview-sub', `MOZA vs ${brands.length - 1} competitors across racing & flight simulation categories`);
+
+  // Header data markers (read from prices.js metadata, no hardcoding)
+  const hdr = document.getElementById('header-meta');
+  if (hdr) {
+    const upd = (typeof DATA_LAST_UPDATE !== 'undefined') ? DATA_LAST_UPDATE : 'N/A';
+    const build = (typeof DATA_BUILD !== 'undefined') ? DATA_BUILD : '';
+    hdr.textContent = `Data: ${upd} | Build: ${build} | ${all.length} SKUs`;
+  }
+
+  return { total: all.length, brands: brands.length, cats: cats.size };
 }
 
 // ===== CHART: Overview Bases =====
 function renderOverviewBases() {
   const ctx = document.getElementById('chart-overview-bases').getContext('2d');
-  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base' || p.cat === 'Wheel Base');
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
   const brands = [...new Set(RACING_PRODUCTS.map(p => p.brand))];
   const datasets = brands.map(brand => {
     const items = RACING_PRODUCTS.filter(p => p.brand === brand && p.cat === 'Wheel Base');
@@ -719,21 +938,21 @@ function renderRacingCat() {
 // ===== CHART: Bases Scatter (price vs torque) =====
 function renderBasesScatter() {
   const ctx = document.getElementById('chart-bases-scatter').getContext('2d');
-  const torqueMap = { '2.3': 2.3, '3': 3, '3.5': 3.5, '5': 5, '6': 6, '8': 8, '9': 9, '11': 11, '12': 12, '15': 15, '18': 18, '20': 20, '21': 21, '25': 25, '27': 27, '28': 28 };
-  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base' || p.cat === 'Wheel Base');
+  const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
   const brands = [...new Set(bases.map(p => p.brand))];
   const datasets = brands.map(brand => {
     const items = bases.filter(p => p.brand === brand);
     return {
       label: brand,
       data: items.map(p => {
-        const nm = p.note ? (p.note.match(/(\d+)Nm/) || [])[1] : null;
-        return { x: nm ? parseInt(nm) : 5, y: p.price, name: p.name };
-      }),
+        const nm = parseNm(p.name, p.note);
+        return nm ? { x: nm, y: p.price, name: p.name } : null;
+      }).filter(v => v !== null),
       backgroundColor: BRAND_COLORS[brand] + 'aa',
       borderColor: BRAND_COLORS[brand],
       borderWidth: 2,
       pointRadius: 6,
+      pointHoverRadius: 8,
     };
   }).filter(ds => ds.data.length > 0);
   new Chart(ctx, {
@@ -743,7 +962,7 @@ function renderBasesScatter() {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { labels: { color: '#8892a4' } },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y} @ ${ctx.parsed.x}Nm` } }
+        tooltip: { callbacks: { label: ctx => `${ctx.raw.name || ctx.dataset.label}: $${ctx.parsed.y} @ ${ctx.parsed.x}Nm` } }
       },
       scales: {
         x: { title: { display: true, text: 'Torque (Nm)', color: '#8892a4' }, ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } },
@@ -758,13 +977,11 @@ function renderBasesValue() {
   const ctx = document.getElementById('chart-bases-value').getContext('2d');
   const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
   const brands = [...new Set(bases.map(p => p.brand))];
-  const torqueMap = { '2.3': 2.3, '3': 3, '3.5': 3.5, '5': 5, '6': 6, '8': 8, '9': 9, '11': 11, '12': 12, '15': 15, '18': 18, '20': 20, '21': 21, '25': 25, '27': 27, '28': 28 };
   const datasets = brands.map(brand => {
     const items = bases.filter(p => p.brand === brand);
     const vals = items.map(p => {
-      const m = p.note ? (p.note.match(/(\d+)Nm/) || [])[1] : null;
-      const nm = m ? parseInt(m) : null;
-      return nm ? { x: brand, y: Math.round(p.price / nm * 10) / 10, name: p.name } : null;
+      const nm = parseNm(p.name, p.note);
+      return nm ? { x: brand, y: Math.round(p.price / nm * 10) / 10, name: p.name, nm } : null;
     }).filter(v => v !== null);
     return vals.length > 0 ? { label: brand, data: vals, backgroundColor: BRAND_COLORS[brand] + '88', borderColor: BRAND_COLORS[brand], borderWidth: 2, borderRadius: 6 } : null;
   }).filter(ds => ds !== null);
@@ -773,7 +990,10 @@ function renderBasesValue() {
     data: { labels: brands, datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$/${ctx.parsed.y}/Nm` } } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.raw.name}: $${ctx.parsed.y}/Nm @ ${ctx.raw.nm}Nm` } }
+      },
       scales: {
         x: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } },
         y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: '$/Nm (lower=better)', color: '#8892a4' } }
@@ -783,24 +1003,29 @@ function renderBasesValue() {
 }
 
 // ===== CHART: Bases Bar =====
+// One bar per product, colored by brand (avoids index misalignment in grouped bars)
 function renderBasesBar() {
   const ctx = document.getElementById('chart-bases-bar').getContext('2d');
   const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
-  const brands = [...new Set(bases.map(p => p.brand))];
-  const datasets = brands.map(brand => ({
-    label: brand,
-    data: bases.filter(p => p.brand === brand).map(p => p.price),
-    backgroundColor: BRAND_COLORS[brand] + '88',
-    borderColor: BRAND_COLORS[brand],
-    borderWidth: 1,
-    borderRadius: 4,
-  }));
   new Chart(ctx, {
     type: 'bar',
-    data: { labels: bases.map(p => p.name.replace(/\s*\(.*\)/, '').slice(0, 24)), datasets },
+    data: {
+      labels: bases.map(p => shortName(p.name, 24)),
+      datasets: [{
+        label: 'Wheel Base Price',
+        data: bases.map(p => p.price),
+        backgroundColor: bases.map(p => BRAND_COLORS[p.brand] + '88'),
+        borderColor: bases.map(p => BRAND_COLORS[p.brand]),
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y}` } } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPrice(ctx.parsed.y)}` } }
+      },
       scales: {
         x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
         y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' }, title: { display: true, text: 'USD', color: '#8892a4' } }
@@ -813,21 +1038,22 @@ function renderBasesBar() {
 function renderWheelsBar() {
   const ctx = document.getElementById('chart-wheels-bar').getContext('2d');
   const wheels = RACING_PRODUCTS.filter(p => p.cat === 'Steering Wheel');
-  const brands = [...new Set(wheels.map(p => p.brand))];
-  const datasets = brands.map(brand => ({
-    label: brand,
-    data: wheels.filter(p => p.brand === brand).map(p => p.price),
-    backgroundColor: BRAND_COLORS[brand] + '88',
-    borderColor: BRAND_COLORS[brand],
-    borderWidth: 1,
-    borderRadius: 4,
-  }));
   new Chart(ctx, {
     type: 'bar',
-    data: { labels: wheels.map(p => p.name.slice(0, 28)), datasets },
+    data: {
+      labels: wheels.map(p => shortName(p.name, 28)),
+      datasets: [{
+        label: 'Steering Wheel Price',
+        data: wheels.map(p => p.price),
+        backgroundColor: wheels.map(p => BRAND_COLORS[p.brand] + '88'),
+        borderColor: wheels.map(p => BRAND_COLORS[p.brand]),
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPrice(ctx.parsed.y)}` } } },
       scales: {
         x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
         y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
@@ -840,21 +1066,22 @@ function renderWheelsBar() {
 function renderPedalsBar() {
   const ctx = document.getElementById('chart-pedals-bar').getContext('2d');
   const pedals = RACING_PRODUCTS.filter(p => p.cat === 'Pedal');
-  const brands = [...new Set(pedals.map(p => p.brand))];
-  const datasets = brands.map(brand => ({
-    label: brand,
-    data: pedals.filter(p => p.brand === brand).map(p => p.price),
-    backgroundColor: BRAND_COLORS[brand] + '88',
-    borderColor: BRAND_COLORS[brand],
-    borderWidth: 1,
-    borderRadius: 4,
-  }));
   new Chart(ctx, {
     type: 'bar',
-    data: { labels: pedals.map(p => p.name.slice(0, 28)), datasets },
+    data: {
+      labels: pedals.map(p => shortName(p.name, 28)),
+      datasets: [{
+        label: 'Pedal Price',
+        data: pedals.map(p => p.price),
+        backgroundColor: pedals.map(p => BRAND_COLORS[p.brand] + '88'),
+        borderColor: pedals.map(p => BRAND_COLORS[p.brand]),
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPrice(ctx.parsed.y)}` } } },
       scales: {
         x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
         y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
@@ -867,21 +1094,22 @@ function renderPedalsBar() {
 function renderBundlesBar() {
   const ctx = document.getElementById('chart-bundles-bar').getContext('2d');
   const bundles = RACING_PRODUCTS.filter(p => p.cat === 'Bundle');
-  const brands = [...new Set(bundles.map(p => p.brand))];
-  const datasets = brands.map(brand => ({
-    label: brand,
-    data: bundles.filter(p => p.brand === brand).map(p => p.price),
-    backgroundColor: BRAND_COLORS[brand] + '88',
-    borderColor: BRAND_COLORS[brand],
-    borderWidth: 1,
-    borderRadius: 4,
-  }));
   new Chart(ctx, {
     type: 'bar',
-    data: { labels: bundles.map(p => p.name.slice(0, 32)), datasets },
+    data: {
+      labels: bundles.map(p => shortName(p.name, 32)),
+      datasets: [{
+        label: 'Bundle Price',
+        data: bundles.map(p => p.price),
+        backgroundColor: bundles.map(p => BRAND_COLORS[p.brand] + '88'),
+        borderColor: bundles.map(p => BRAND_COLORS[p.brand]),
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPrice(ctx.parsed.y)}` } } },
       scales: {
         x: { ticks: { color: '#8892a4', maxRotation: 45 }, grid: { color: '#2d3148' } },
         y: { ticks: { color: '#8892a4' }, grid: { color: '#2d3148' } }
@@ -924,18 +1152,20 @@ function populateBasesTable() {
   const tbody = document.getElementById('tbody-bases');
   tbody.innerHTML = '';
   const bases = RACING_PRODUCTS.filter(p => p.cat === 'Wheel Base');
-  const torqueMap = { '2.3': 2.3, '3': 3, '3.5': 3.5, '5': 5, '6': 6, '8': 8, '9': 9, '11': 11, '12': 12, '15': 15, '18': 18, '20': 20, '21': 21, '25': 25, '27': 27, '28': 28 };
   bases.forEach(p => {
-    const nm = p.note ? (p.note.match(/(\d+)Nm/) || [])[1] : '?';
-    const nmNum = parseInt(nm) || 0;
-    const perNm = nmNum > 0 ? (p.price / nmNum).toFixed(1) : '?';
-    const type = p.brand === 'Logitech' ? 'Gear/Belt' : (p.price > 600 ? 'DD Premium' : 'Direct Drive');
+    const nm = parseNm(p.name, p.note);
+    const nmNum = nm || 0;
+    const perNm = nmNum > 0 ? (p.price / nmNum).toFixed(1) : null;
+    // Logitech & Thrustmaster use gear/belt drive; the rest are direct drive
+    const isBelt = p.brand === 'Logitech' || p.brand === 'Thrustmaster';
+    const type = isBelt ? 'Gear/Belt' : (p.price > 600 ? 'DD Premium' : 'Direct Drive');
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+    if (p.brand === 'MOZA') tr.classList.add('row-moza');
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass(p.brand)}">${p.brand}</span></td>
       <td>${p.name}</td>
-      <td style="font-weight:600">${nm}Nn</td>
-      <td><span class="price-val">$${p.price}</span></td>
-      <td>${nmNum > 0 ? '$' + perNm + '/Nm' : '—'}</td>
+      <td style="font-weight:600">${nmNum > 0 ? nmNum + ' Nm' : '—'}</td>
+      <td><span class="price-val">${fmtPrice(p.price)}</span></td>
+      <td>${perNm ? '$' + perNm + '/Nm' : '—'}</td>
       <td><span class="cat-tag">${type}</span></td>`;
     tbody.appendChild(tr);
   });
@@ -948,9 +1178,10 @@ function populateWheelsTable() {
   const wheels = RACING_PRODUCTS.filter(p => p.cat === 'Steering Wheel');
   wheels.forEach(p => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+    if (p.brand === 'MOZA') tr.classList.add('row-moza');
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass(p.brand)}">${p.brand}</span></td>
       <td>${p.name}</td>
-      <td><span class="price-val">$${p.price}</span></td>
+      <td><span class="price-val">${fmtPrice(p.price)}</span></td>
       <td style="color:var(--text-muted);font-size:12px">${p.note || '—'}</td>`;
     tbody.appendChild(tr);
   });
@@ -974,10 +1205,11 @@ function populatePedalsTable() {
     else if (note.includes('clutch')) type = '3-pedal';
 
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase().replace(/[^a-z0-9]/g,'')}">${p.brand}</span></td>
+    if (p.brand === 'MOZA') tr.classList.add('row-moza');
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass(p.brand)}">${p.brand}</span></td>
       <td>${p.name}</td>
       <td><span class="cat-tag">${type}</span></td>
-      <td><span class="price-val">$${p.price}</span></td>
+      <td><span class="price-val">${fmtPrice(p.price)}</span></td>
       <td style="font-size:12px;color:var(--text-muted)">${sensor}</td>`;
     tbody.appendChild(tr);
   });
@@ -990,10 +1222,11 @@ function populateBundlesTable() {
   const bundles = RACING_PRODUCTS.filter(p => p.cat === 'Bundle');
   bundles.forEach(p => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="brand-tag brand-${p.brand.toLowerCase()}">${p.brand}</span></td>
+    if (p.brand === 'MOZA') tr.classList.add('row-moza');
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass(p.brand)}">${p.brand}</span></td>
       <td>${p.name}</td>
       <td style="font-size:12px;color:var(--text-muted)">${p.note || 'Base+Wheel+Pedals'}</td>
-      <td><span class="price-val">$${p.price}</span></td>`;
+      <td><span class="price-val">${fmtPrice(p.price)}</span></td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1012,13 +1245,14 @@ function populateBrandsTable() {
     const entry = items.find(p => p.price === minP);
     const flagship = items.find(p => p.price === maxP);
     let positioning = 'Mid-range';
-    if (minP < 150 && maxP < 400) positioning = 'Budget / Entry';
-    else if (minP >= 150 && maxP < 700) positioning = 'Mid-range';
-    else if (minP >= 300 || maxP >= 1000) positioning = 'High-end / Pro';
+    if (maxP < 400) positioning = 'Budget / Entry';
+    else if (maxP >= 1000) positioning = 'High-end / Pro';
+    else positioning = 'Mid-range';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="brand-tag brand-${brand.toLowerCase().replace(/[^a-z0-9]/g,'')}">${brand}</span></td>
+    if (brand === 'MOZA') tr.classList.add('row-moza');
+    tr.innerHTML = `<td><span class="brand-tag ${brandClass(brand)}">${brand}</span></td>
       <td style="text-align:center">${items.length}</td>
-      <td>$${minP} — $${maxP}</td>
+      <td>${fmtPrice(minP)} — ${fmtPrice(maxP)}</td>
       <td style="font-size:12px">${entry ? entry.name : '—'}</td>
       <td style="font-size:12px">${flagship ? flagship.name : '—'}</td>
       <td><span class="cat-tag">${positioning}</span></td>`;
@@ -1108,6 +1342,13 @@ window.addEventListener('DOMContentLoaded', () => {
   populateBundlesTable();
   populateBrandsTable();
 
+  // Dynamic stats (replaces hardcoded numbers)
+  renderStats();
+
+  // Initialise filter counters
+  applyFilters('racing');
+  applyFilters('flight');
+
   // Render charts
   renderOverviewBases();
   renderOverviewCount();
@@ -1126,45 +1367,52 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===== EXPORT TO CSV =====
-function exportTableToCSV(tableId, filename) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-  const rows = table.querySelectorAll('tr');
-  const csv = [];
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('th, td');
-    const rowData = [];
-    cells.forEach(cell => {
-      let text = cell.textContent.trim().replace(/"/g, '""');
-      // Remove brand tags and other HTML artifacts
-      text = text.replace(/\s+/g, ' ');
-      rowData.push('"' + text + '"');
-    });
-    csv.push(rowData.join(','));
-  });
-  const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n');
-  const encodedUri = encodeURI(csvContent);
+// Uses a Blob + UTF-8 BOM so Excel opens it correctly (no mojibake on special chars).
+function _downloadCSV(csvText, filename) {
+  const blob = new Blob(['\uFEFF' + csvText], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', filename + '.csv');
+  link.href = url;
+  link.download = filename;
+  link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function _csvCell(val) {
+  const s = String(val == null ? '' : val).replace(/\s+/g, ' ').trim();
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function exportTableToCSV(tableId, filename) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  // Only export visible rows so filters/sorts are respected
+  const rows = table.querySelectorAll('tr');
+  const lines = [];
+  rows.forEach(row => {
+    if (row.style.display === 'none') return;
+    const cells = row.querySelectorAll('th, td');
+    if (!cells.length) return;
+    const rowData = [];
+    cells.forEach(cell => rowData.push(_csvCell(cell.textContent)));
+    lines.push(rowData.join(','));
+  });
+  _downloadCSV(lines.join('\n'), filename + '.csv');
 }
 
 function exportAllProducts() {
   const allProducts = [...RACING_PRODUCTS, ...FLIGHT_PRODUCTS];
-  let csv = '"Brand","Category","Product Name","Price (USD)","Notes"\n';
+  const lines = ['"Brand","Category","Product Name","Price (USD)","Notes"'];
   allProducts.forEach(p => {
-    csv += `"${p.brand}","${p.cat}","${p.name.replace(/"/g, '""')}",${p.price},"${p.note || ''}"\n`;
+    lines.push([
+      _csvCell(p.brand), _csvCell(p.cat), _csvCell(p.name),
+      _csvCell(p.price), _csvCell(p.note || ''),
+    ].join(','));
   });
-  const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  const link = document.createElement('a');
-  link.setAttribute('href', csvContent);
-  link.setAttribute('download', 'MOZA_Competitor_Prices_' + new Date().toISOString().slice(0,10) + '.csv');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  _downloadCSV(lines.join('\n'), 'MOZA_Competitor_Prices_' + new Date().toISOString().slice(0, 10) + '.csv');
 }
 </script>
 </body>
